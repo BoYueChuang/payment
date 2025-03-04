@@ -1,0 +1,82 @@
+/* === Reset SCSS === */
+
+/* 1. 設定全域 box-sizing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. 移除列表樣式 */
+ul,
+ol {
+    list-style: none;
+}
+
+/* 3. 移除預設的按鈕樣式 */
+button {
+    all: unset;
+    cursor: pointer;
+}
+
+/* 4. 預設字體、行高、抗鋸齒 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* 5. 移除超連結的預設樣式 */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 6. 移除圖片的預設邊框 */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 7. 預設 HTML 標籤的間距 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+/* 8. 設定 HTML 根元素 */
+html {
+    font-size: 16px; // 設定根字體大小
+    scroll-behavior: smooth; // 滑動行為平滑
+}
+
+/* 9. 表單元素一致化 */
+input,
+textarea,
+select,
+button {
+    font: inherit;
+    border: none;
+    outline: none;
+}
+
+/* 10. 禁用 input 自動填充背景色 (Chrome) */
+input:-webkit-autofill {
+    background-color: transparent !important;
+    box-shadow: 0 0 0px 1000px white inset !important;
+}
+
+/* 11. 讓 textarea 自適應高度 */
+textarea {
+    resize: vertical;
+}

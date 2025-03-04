@@ -1,0 +1,163 @@
+$pc: "(min-width: 1024px)";
+$mobile: "(max-width: 767px)";
+
+body {
+    background: var(--Background, #C4D9D4);
+}
+
+.wrapper {
+    @media #{$pc} {
+        width: 1280px;
+        margin: 0 auto;
+    }
+
+    @media #{$mobile} {
+        width: 390px;
+        margin: 0 auto;
+    }
+}
+
+.title {
+    position: relative;
+    margin: 0 auto;
+
+    @media #{$pc} {
+        background-image: url('../assets/images/pc-banner.png');
+        background-repeat: no-repeat;
+        width: 1280px;
+        height: 536px;
+    }
+
+    @media #{$mobile} {}
+
+    .title-block {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+
+        .title-name {
+            @media #{$pc} {
+                width: 182px;
+                color: var(--White, #FFF);
+                font-family: 'Gotham', sans-serif;
+                font-size: 24px;
+                font-style: normal;
+                font-weight: 900;
+                line-height: normal;
+            }
+        }
+
+        .title-property {
+            @media #{$pc} {
+                width: 164px;
+                color: var(--White, #FFF);
+                font-family: "Ade";
+                font-size: 64px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+            }
+        }
+    }
+}
+
+.form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+    padding: 24px;
+
+    .basic-formControl {
+        .MuiOutlinedInput-root {
+            background-color: white;
+            border: 0px;
+        }
+
+        .MuiOutlinedInput-notchedOutline {
+            border: none;
+        }
+    }
+
+    .amount {
+        margin-bottom: 5px;
+
+        @media #{$pc} {
+            width: 600px;
+        }
+    }
+
+    .exchange-rate {
+        width: 568px;
+        color: #49454F;
+        margin-bottom: 16px;
+    }
+
+    .email {
+        margin-bottom: 16px;
+
+        @media #{$pc} {
+            width: 600px;
+        }
+    }
+}
+
+
+
+.tpfield {
+    height: 55px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    margin: 5px 0;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.align-left {
+    justify-items: left;
+}
+
+.width-300 {
+    width: 300px;
+}
+
+.width-568 {
+    width: 568px;
+}
+
+.width-145 {
+    width: 145px;
+}
+
+.m-b-15 {
+    margin-bottom: 15px;
+}
+
+.font-size-15 {
+    font-size: 15px;
+}
+
+#pr-button div {
+    width: 300px;
+    min-height: 30px;
+    border: 1px solid black;
+    background-image: -webkit-named-image(apple-pay-logo-white);
+    background-size: 100% calc(50% + 2px);
+    background-repeat: no-repeat;
+    background-color: black;
+    background-position: 50% 50%;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px auto;
+    transition: background-color .15s;
+    appearance: none !important;
+}
