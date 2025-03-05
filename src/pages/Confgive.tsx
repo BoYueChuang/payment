@@ -9,12 +9,14 @@ import { CiCreditCard1 } from "react-icons/ci";
 import "./Congive.scss";
 import CreditCard from "./CreditCard";
 import ExchangeRate from "./ExchangeRate";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 declare global {
     var TPDirect: any;
 }
 
 const CONFGive = () => {
+    const { register, handleSubmit, formState: { errors } } = useForm<any>();
     const [value, setValue] = useState("credit-card");
     const [formData, setFormData] = useState({
         amount: 0, // 奉獻金額
@@ -55,30 +57,20 @@ const CONFGive = () => {
         );
     }, [value]);
 
-
-    // 處理輸入變更
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
     // 提交表單
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault(); // 防止表單的默認提交行為
-        console.log("提交的資料:", formData);
+    // const handleSubmit = (e: React.FormEvent) => {
+    //     e.preventDefault(); // 防止表單的默認提交行為
 
-        TPDirect.card.getPrime((result: any) => {
-            if (result.status !== 0) {
-                alert('取得 Prime 失敗：' + result.msg);
-                return;
-            };
-            alert('Prime 取得成功：' + result.card.prime);
-            // 傳送至後端 API
-            postPay(result.card.prime);
-        });
-    };
+    //     TPDirect.card.getPrime((result: any) => {
+    //         if (result.status !== 0) {
+    //             alert('取得 Prime 失敗：' + result.msg);
+    //             return;
+    //         };
+    //         alert('Prime 取得成功：' + result.card.prime);
+    //         // 傳送至後端 API
+    //         postPay(result.card.prime);
+    //     });
+    // };
 
     // Apple Pay 按鈕點擊事件
     const applePayHandleSubmit = () => {
@@ -154,23 +146,28 @@ const CONFGive = () => {
 
     // api
     const postPay = (prime: string) => {
-        fetch('https://repo-tappy.vercel.app/api/payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                prime: prime,
-                amount: Number(formData.amount),
-                cardholder: {
-                    name: 'John Doe',
-                    email: formData.email,
-                    phone_number: formData.phone_number,
-                },
-            }),
-        })
-            .then((res) => res.json())
-            .then(() => alert('交易成功！'))
-            .catch((err) => alert('交易失敗：' + err.message));
+        // fetch('https://repo-tappy.vercel.app/api/payment', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({
+        //         prime: prime,
+        //         amount: Number(formData.amount),
+        //         cardholder: {
+        //             name: 'John Doe',
+        //             email: formData.email,
+        //             phone_number: formData.phone_number,
+        //         },
+        //     }),
+        // })
+        // .then((res) => res.json())
+        // .then(() => alert('交易成功！'))
+        // .catch((err) => alert('交易失敗：' + err.message));
     }
+
+    // onSubmit 會在表單提交時被調用
+    const onSubmit: SubmitHandler<any> = (data) => {
+        console.log(data);
+    };
 
 
     return (
@@ -181,6 +178,9 @@ const CONFGive = () => {
                     <p className="title-property">GIVE</p>
                 </div>
             </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+
+            </form>
             <Box className="form">
                 <TextField
                     required
@@ -192,8 +192,6 @@ const CONFGive = () => {
                     className="amount basic-formControl"
                     name="amount"
                     type="number"
-                    value={formData.amount}
-                    onChange={handleChange}
                 />
                 <ExchangeRate value={formData.amount}></ExchangeRate>
                 <TextField
@@ -202,8 +200,6 @@ const CONFGive = () => {
                     className="email basic-formControl"
                     sx={{ marginBottom: "15px", width: "300px" }}
                     name="email"
-                    value={formData.email}
-                    onChange={handleChange}
                 />
                 <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: "15px", width: "100%", maxWidth: "300px" }}>
                     <TextField
@@ -222,14 +218,10 @@ const CONFGive = () => {
                         placeholder="Mobile Number"
                         sx={{ width: "190px" }}
                         name="phone_number"
-                        value={formData.phone_number}
-                        onChange={handleChange}
                     />
                 </Box>
                 <Select
                     required
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
                     displayEmpty
                     sx={{ width: "300px", marginBottom: "15px" }}
                     renderValue={(selected) => {
@@ -317,7 +309,6 @@ const CONFGive = () => {
                             backgroundColor: '#ff9300',
                             marginTop: "10px"
                         }}
-                        onClick={handleSubmit}
                     >
                         CONTINUE
                     </Button>
