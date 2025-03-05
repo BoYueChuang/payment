@@ -1,8 +1,14 @@
 $pc: "(min-width: 1024px)";
 $mobile: "(max-width: 767px)";
 
-body {
-    background: var(--Background, #C4D9D4);
+@font-face {
+    font-family: 'Gotham-Black';
+    src: url('/fonts/Gotham-Black.woff2') format('woff2')
+}
+
+@font-face {
+    font-family: 'Ade';
+    src: url('/fonts/Ade-Display.woff2') format('woff2')
 }
 
 .wrapper {
@@ -22,7 +28,7 @@ body {
     margin: 0 auto;
 
     @media #{$pc} {
-        background-image: url('../assets/images/pc-banner.png');
+        background-image: url('/images/pc-banner.png');
         background-repeat: no-repeat;
         width: 1280px;
         height: 536px;
@@ -37,20 +43,17 @@ body {
 
         .title-name {
             @media #{$pc} {
-                width: 182px;
-                color: var(--White, #FFF);
-                font-family: 'Gotham', sans-serif;
+                color: #FFF;
+                font-family: 'Gotham-Black';
                 font-size: 24px;
-                font-style: normal;
-                font-weight: 900;
+                font-weight: bold;
                 line-height: normal;
             }
         }
 
         .title-property {
             @media #{$pc} {
-                width: 164px;
-                color: var(--White, #FFF);
+                color: #FFF;
                 font-family: "Ade";
                 font-size: 64px;
                 font-style: normal;
