@@ -171,152 +171,185 @@ const CONFGive = () => {
 
 
     return (
-        <div className="wrapper">
+        <div>
             <div className="title">
                 <div className="title-block">
                     <p className="title-name">2025 <br></br>THE HOPE 特會</p>
                     <p className="title-property">GIVE</p>
                 </div>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="wrapper">
+                <form onSubmit={handleSubmit(onSubmit)}>
 
-            </form>
-            <Box className="form">
-                <TextField
-                    required
-                    slotProps={{
-                        input: {
-                            startAdornment: <InputAdornment position="start">NT$</InputAdornment>,
-                        },
-                    }}
-                    className="amount basic-formControl"
-                    name="amount"
-                    type="number"
-                />
-                <ExchangeRate value={formData.amount}></ExchangeRate>
-                <TextField
-                    required
-                    placeholder="Email"
-                    className="email basic-formControl"
-                    sx={{ marginBottom: "15px", width: "300px" }}
-                    name="email"
-                />
-                <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: "15px", width: "100%", maxWidth: "300px" }}>
-                    <TextField
-                        id="outlined-read-only-input"
-                        defaultValue="+886"
-                        slotProps={{
-                            input: {
-                                readOnly: true,
-                            },
-                        }}
-                        sx={{ width: "100px" }}
-                    />
-                    <TextField
-                        required
-                        id="outlined-required"
-                        placeholder="Mobile Number"
-                        sx={{ width: "190px" }}
-                        name="phone_number"
-                    />
+                </form>
+                <Box className="form">
+                    <Box className="form-block">
+                        <TextField
+                            required
+                            slotProps={{
+                                input: {
+                                    startAdornment: <InputAdornment position="start">NT$</InputAdornment>,
+                                },
+                            }}
+                            className="amount basic-formControl"
+                            name="amount"
+                            type="number"
+                        />
+                        <ExchangeRate value={formData.amount}></ExchangeRate>
+                        <TextField
+                            required
+                            placeholder="Email"
+                            className="email basic-formControl"
+                            sx={{ marginBottom: "15px", width: "300px" }}
+                            name="email"
+                        />
+                        <Box className="phone-block">
+                            <TextField
+                                id="outlined-read-only-input"
+                                defaultValue="+886"
+                                slotProps={{
+                                    input: {
+                                        readOnly: true,
+                                    },
+                                }}
+                                className="phone-code basic-formControl"
+                            />
+                            <TextField
+                                required
+                                id="outlined-required"
+                                placeholder="Mobile Number"
+                                className="phone-number basic-formControl"
+                                name="phone_number"
+                            />
+                        </Box>
+                        <Box className="contact-information">
+                            <p className="contact-information-note">如要與教會十一奉獻數據整併，請填寫相同的聯絡資料</p>
+                            <FormControlLabel
+                                className="checkbox-label-block"
+                                control={
+                                    <Checkbox className="checkbox-custom" />
+                                }
+                                label={<div className="label-custom">
+                                    <p className="label-chinese">是否需開立年度奉獻收據？</p>
+                                    <p className="label-english">Do you need annual giving receipt？</p></div>}
+                                labelPlacement="start"
+                            />
+                            <div>
+                                <Button className="personal-button">個人</Button>
+                                <Button className="company-button">企業</Button>
+                            </div>
+                            <div>
+                                <p className="label-chinese">收據姓名</p>
+                                <p className="label-english">Receipt Name</p>
+                                <TextField
+                                    id="outlined-required"
+                                    className="receiptName basic-formControl"
+                                    name="receiptName"
+                                />
+                                <p className="contact-information-note">如有報稅需求，請填寫與台灣身分證相符的姓名</p>
+                            </div>
+                            <FormControlLabel
+                                className="checkbox-label-block "
+                                control={
+                                    <Checkbox
+                                        sx={{
+                                            color: 'rgba(40, 40, 41, 0.80)',
+                                            '&.Mui-checked': {
+                                                color: '#FFA01F',
+                                            },
+                                        }}
+                                        className="checkbox-custom" />
+                                }
+                                label={<div className="label-custom">
+                                    <p className="label-chinese">是否上傳國稅局？(台灣報稅需要)</p>
+                                    <p className="label-english">Do you need to submit your taxes to Taiwan's IRS?</p></div>}
+                                labelPlacement="start"
+                            />
+                            <Select
+                                required
+                                displayEmpty
+                                sx={{ width: "300px", marginBottom: "15px" }}
+                                renderValue={(selected) => {
+                                    let icon, text;
+
+                                    // 動態選擇對應的圖標和文字
+                                    switch (selected) {
+                                        case "apple-pay":
+                                            icon = <SiApplepay size={24} />;
+                                            text = "Apple Pay";
+                                            break;
+                                        case "google-pay":
+                                            icon = <FaGooglePay size={24} />;
+                                            text = "Google Pay";
+                                            break;
+                                        case "samsung-pay":
+                                            icon = <SiSamsungpay size={24} />;
+                                            text = "Samsung Pay";
+                                            break;
+                                        case "credit-card":
+                                            icon = <CiCreditCard1 size={24} />;
+                                            text = "Credit Card";
+                                            break;
+                                        default:
+                                            icon = <SiApplepay size={24} />;
+                                            text = "Apple Pay";
+                                            break;
+                                    }
+
+                                    return (
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                            {icon}
+                                            {text}
+                                        </Box>
+                                    );
+                                }}
+                            >
+                                <MenuItem value="apple-pay">
+                                    <ListItemIcon>
+                                        <SiApplepay size={24} />
+                                    </ListItemIcon>
+                                    Apple Pay
+                                </MenuItem>
+                                <MenuItem value="google-pay">
+                                    <ListItemIcon>
+                                        <FaGooglePay size={24} />
+                                    </ListItemIcon>
+                                    Google Pay
+                                </MenuItem>
+                                <MenuItem value="samsung-pay">
+                                    <ListItemIcon>
+                                        <SiSamsungpay size={24} />
+                                    </ListItemIcon>
+                                    Samsung Pay
+                                </MenuItem>
+                                <MenuItem value="credit-card">
+                                    <ListItemIcon>
+                                        <CiCreditCard1 size={24} />
+                                    </ListItemIcon>
+                                    Credit Card
+                                </MenuItem>
+                            </Select>
+                            <CreditCard value={value}></CreditCard>
+                            {value !== "apple-pay" && (
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    sx={{
+                                        width: "300px",
+                                        borderRadius: "20px",
+                                        backgroundColor: '#ff9300',
+                                        marginTop: "10px"
+                                    }}
+                                >
+                                    CONTINUE
+                                </Button>
+                            )}
+
+                            <div id="pr-button" style={{ display: "none" }}></div>
+                        </Box>
+                    </Box>
                 </Box>
-                <Select
-                    required
-                    displayEmpty
-                    sx={{ width: "300px", marginBottom: "15px" }}
-                    renderValue={(selected) => {
-                        let icon, text;
-
-                        // 動態選擇對應的圖標和文字
-                        switch (selected) {
-                            case "apple-pay":
-                                icon = <SiApplepay size={24} />;
-                                text = "Apple Pay";
-                                break;
-                            case "google-pay":
-                                icon = <FaGooglePay size={24} />;
-                                text = "Google Pay";
-                                break;
-                            case "samsung-pay":
-                                icon = <SiSamsungpay size={24} />;
-                                text = "Samsung Pay";
-                                break;
-                            case "credit-card":
-                                icon = <CiCreditCard1 size={24} />;
-                                text = "Credit Card";
-                                break;
-                            default:
-                                icon = <SiApplepay size={24} />;
-                                text = "Apple Pay";
-                                break;
-                        }
-
-                        return (
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                {icon}
-                                {text}
-                            </Box>
-                        );
-                    }}
-                >
-                    <MenuItem value="apple-pay">
-                        <ListItemIcon>
-                            <SiApplepay size={24} />
-                        </ListItemIcon>
-                        Apple Pay
-                    </MenuItem>
-                    <MenuItem value="google-pay">
-                        <ListItemIcon>
-                            <FaGooglePay size={24} />
-                        </ListItemIcon>
-                        Google Pay
-                    </MenuItem>
-                    <MenuItem value="samsung-pay">
-                        <ListItemIcon>
-                            <SiSamsungpay size={24} />
-                        </ListItemIcon>
-                        Samsung Pay
-                    </MenuItem>
-                    <MenuItem value="credit-card">
-                        <ListItemIcon>
-                            <CiCreditCard1 size={24} />
-                        </ListItemIcon>
-                        Credit Card
-                    </MenuItem>
-                </Select>
-                <CreditCard value={value}></CreditCard>
-
-                <FormControlLabel
-                    sx={{ marginBottom: "15px", width: "300px", marginLeft: "0", marginRight: "0", display: "flex", justifyContent: "space-between" }}
-                    control={<Checkbox sx={{ padding: "0" }} />}
-                    label={<div className="font-size-15"><p>是否需開立年度奉獻收？</p><p>Do you need annual giving receipt？</p></div>}
-                    labelPlacement="start"
-                />
-
-                <FormControlLabel
-                    sx={{ marginBottom: "15px", width: "300px", marginLeft: "0", marginRight: "0", display: "flex", justifyContent: "space-between" }}
-                    control={<Checkbox sx={{ padding: "0" }} />}
-                    label={<div className="font-size-15"><p>是否上傳國稅局？(台灣報稅需要)</p><p>Do you need to submit your taxes to Taiwan's IRS？</p></div>}
-                    labelPlacement="start"
-                />
-                {value !== "apple-pay" && (
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        sx={{
-                            width: "300px",
-                            borderRadius: "20px",
-                            backgroundColor: '#ff9300',
-                            marginTop: "10px"
-                        }}
-                    >
-                        CONTINUE
-                    </Button>
-                )}
-
-                <div id="pr-button" style={{ display: "none" }}></div>
-
-            </Box>
+            </div>
         </div>
     );
 };
