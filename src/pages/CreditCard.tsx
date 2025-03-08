@@ -1,9 +1,19 @@
 import { useEffect } from "react";
+import { TextField } from "@mui/material";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
 
-const CreditCard = (paymentType: { value: string }) => {
+
+interface CreditCardProps {
+    paymentType: string;
+    register: UseFormRegister<any>;
+    errors: FieldErrors<any>;
+}
+
+const CreditCard: React.FC<CreditCardProps> = (props) => {
+    const { paymentType, register, errors } = props;
     useEffect(() => {
         // 只在選擇 credit-card 時執行設置
-        if (paymentType.value === "credit-card") {
+        if (paymentType === "credit-card") {
             // 設置 TPDirect
             TPDirect.card.setup({
                 fields: {
@@ -22,38 +32,50 @@ const CreditCard = (paymentType: { value: string }) => {
                 },
                 styles: {
                     'input': {
-                        'color': 'black',
-                    },
-                    'input.ccv': {
-                        'font-size': '16px'
-                    },
-                    'input.expiration-date': {
-                        'font-size': '16px'
-                    },
-                    'input.card-number': {
-                        'font-size': '16px'
-                    },
-                    ':focus': {
-                        'color': 'black'
-                    },
-                    '.valid': {
-                        'color': 'black'
-                    },
-                    '.invalid': {
-                        'color': 'red'
+                        'font-size': '16px',
+                        'color': '#070707',
+                        'font-family': 'Roboto-light',
                     }
                 }
             });
         }
-    }, [paymentType.value]); // 依賴於 paymentType.value 變更來執行
+    }, [paymentType]); // 依賴於 paymentType.value 變更來執行
 
-    if (paymentType.value === "credit-card") {
+    if (paymentType === "credit-card") {
         return (
-            <div>
-                <div className="tpfield width-300 m-b-15" id="card-number"></div>
-                <div className="display-flex space-between m-b-15">
-                    <div className="tpfield width-145" id="card-expiration-date"></div>
-                    <div className="tpfield width-145" id="card-ccv"></div>
+            <div className="credit-card-block">
+                <div>
+                    <p className="label-chinese">持卡人姓名</p>
+                    <p className="label-english">Card Holder Name</p>
+                    <TextField
+                        {...register("name", {
+                            required: paymentType === "credit-card" ? "姓名必填" : false,
+                        })}
+                        sx={{ marginTop: "8px" }}
+                        id="outlined-required"
+                        className="phone-number width100 basic-formControl"
+                        name="name"
+                        type="text"
+                        error={!!errors.name}
+                        helperText={typeof errors.name?.message === 'string' ? errors.name?.message : undefined}
+                    />
+                </div>
+                <div>
+                    <p className="label-chinese">信用卡卡號</p>
+                    <p className="label-english">Card Number</p>
+                    <div className="tpfield width100" id="card-number"></div>
+                </div>
+                <div className="credit-card-date-ccv-block">
+                    <div>
+                        <p className="label-chinese">有效日期</p>
+                        <p className="label-english">Expiration Date</p>
+                        <div className="tpfield width100" id="card-expiration-date"></div>
+                    </div>
+                    <div>
+                        <p className="label-chinese">末三碼</p>
+                        <p className="label-english">CCV</p>
+                        <div className="tpfield width100" id="card-ccv"></div>
+                    </div>
                 </div>
             </div>
         );

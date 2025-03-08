@@ -1,5 +1,6 @@
-$pc: "(min-width: 390px)";
-$mobile: "(width: 390px)";
+$pc: "(min-width: 1033px)";
+$tablet: "(max-width: 1032px)";
+$mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
 @font-face {
     font-family: 'Gotham-Black';
@@ -16,254 +17,388 @@ $mobile: "(width: 390px)";
     src: url('/fonts/Roboto.woff2') format('woff2')
 }
 
-.wrapper {
-    width: 100%;
-    margin: 0 auto;
-}
-
 .title {
-    position: relative;
-    margin: 0 auto;
-    width: 100%; // 讓寬度自適應
-    height: 536px; // 保持統一高度
+    position: fixed; // **讓標題固定**
+    top: 0;
+    left: 0;
+    width: 100%;
     background-repeat: no-repeat;
-    background-position: center; // 水平 & 垂直置中
-    background-size: cover; // 讓圖片覆蓋整個區塊
+    background-position: center;
+    background-size: cover;
+    transition: background 0.3s ease-in-out;
+    z-index: 100; // **確保它高於其他內容**
 
-
-    @media (max-width: 1032px) {
+    @media #{$pc},
+    #{$tablet} {
         background-image: url('/images/pc-banner-middle-size.png');
     }
 
-    @media (min-width: 1033px) {
+    @media #{$tablet} {
         background-image: url('/images/pc-banner-large-size.png');
     }
 
-    @media #{$mobile} {}
+    @media #{$mobile} {
+        background-image: url('/images/mobile-banner.png');
+    }
+
+    // 黑色遮罩 (會根據滾動改變透明度)
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, var(--scroll-opacity));
+        transition: background 0.3s ease-in-out;
+    }
 
     .title-block {
         position: absolute;
         bottom: 20px;
         left: 20px;
+        z-index: 1;
 
         .title-name {
-            @media #{$pc} {
-                color: #FFF;
-                font-family: 'Gotham-Black';
-                font-size: 24px;
-                font-weight: bold;
-                line-height: normal;
-            }
+            font-family: 'Gotham-Black';
+            font-size: 24px;
+            font-weight: bold;
+            line-height: normal;
+
         }
 
         .title-property {
-            @media #{$pc} {
-                color: #FFF;
-                font-family: "Ade";
-                font-size: 64px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-            }
+            font-family: "Ade";
+            font-size: 64px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
         }
     }
 }
 
-.form {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+.wrapper {
     width: 100%;
     margin: 0 auto;
-    align-items: center;
-    padding: 24px;
 
-    .form-block {
-        width: 600px;
-    }
-
-    .basic-formControl {
-        .MuiOutlinedInput-root {
-            background-color: white;
-            border: 0px;
-        }
-
-        .MuiOutlinedInput-notchedOutline {
-            border: none;
-        }
-    }
-
-    .amount {
-        margin-bottom: 5px;
-
-        @media #{$pc} {
-            width: 100%;
-        }
-    }
-
-    .exchange-rate {
-        width: 568px;
-        font-family: 'Roboto-light';
-        font-size: 14px;
-        font-weight: 400;
-        color: #49454F;
-        margin-bottom: 16px;
-        margin-left: 16px;
-    }
-
-    .email {
-        margin-bottom: 16px;
-
-        @media #{$pc} {
-            width: 100%;
-        }
-    }
-
-    .phone-block {
+    .form {
         display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-        width: 100%;
+        justify-content: center;
+        flex-direction: column;
+        margin: 0 auto;
+        align-items: center;
+        padding: 24px;
 
-        .phone-code {
-            @media #{$pc} {
-                width: 96px;
+        .form-block {
+
+            @media #{$pc},
+            #{$tablet} {
+                width: 600px;
             }
-        }
 
-        .phone-number {
-            @media #{$pc} {
-                width: 496px;
+            @media #{$mobile} {
+                width: 100%;
+                max-width: 390px;
+            }
+
+            .basic-formControl {
+                border-radius: 4px;
+                font-family: 'Roboto-light';
+
+                .MuiOutlinedInput-root {
+                    border: 0px;
+                    color: #070707;
+                    font-size: 16px;
+                    background-color: white;
+                }
+
+                .MuiSelect-select {
+                    color: #070707;
+                    background-color: white;
+                }
+
+                .MuiFormHelperText-root {
+                    color: red;
+                }
+
+                .MuiOutlinedInput-notchedOutline {
+                    border: none;
+                }
+
+
+                /* 隱藏數字輸入的上下箭頭 */
+                input[type="number"]::-webkit-inner-spin-button,
+                input[type="number"]::-webkit-outer-spin-button {
+                    appearance: none;
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+            }
+
+            .amount {
+                margin-bottom: 5px;
+
+                .MuiInputBase-root {
+                    height: 88px;
+                    font-size: 24px;
+
+                    .MuiTypography-root {
+                        font-size: 24px;
+                    }
+                }
+
+                @media #{$pc},
+                #{$tablet} {
+                    width: 100%;
+                }
+            }
+
+            .exchange-rate {
+                font-family: 'Roboto-light';
+                font-size: 14px;
+                font-weight: 400;
+                color: #49454F;
+                margin-bottom: 16px;
+                margin-left: 16px;
+
+                @media #{$pc},
+                #{$tablet} {
+                    width: 568px;
+                }
+
+                @media #{$mobile},
+                #{$tablet} {
+                    width: 120px;
+                }
+            }
+
+            .email {
+                margin-bottom: 16px;
+                width: 100%;
+            }
+
+            .phone-block {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 16px;
+                width: 100%;
+
+                .phone-code {
+                    width: 130px;
+                }
+
+                .phone-number {
+
+                    @media #{$pc},
+                    #{$tablet} {
+                        width: 496px;
+                    }
+                }
+            }
+
+            .contact-information {
+                display: flex;
+                flex-direction: column;
+                gap: 36px;
+
+                .receipt-name-block {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 24px;
+                }
+
+                .contact-information-note {
+                    color: rgba(40, 40, 41, 0.80);
+                    font-family: 'Roboto-light';
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 20px;
+                    letter-spacing: 0.1px;
+                }
+
+                .checkbox-label-block {
+                    margin-left: 0;
+                    margin-right: 0;
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                .checkbox-custom {
+                    padding: 0;
+                    color: rgba(40, 40, 41, 0.80);
+
+                    &.Mui-checked {
+                        color: #FFA01F;
+                    }
+
+                    & .MuiSvgIcon-fontSizeMedium {
+                        border-radius: 2px;
+                    }
+                }
+
+                .company-tax-block {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 36px;
+                }
+
+                .label-custom {
+                    font-family: 'Roboto-light';
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 24px;
+                    letter-spacing: 0.5pxㄤ
+                }
+
+                .label-chinese {
+                    color: #070707;
+                    font-size: 18px;
+                }
+
+                .label-english {
+                    color: rgba(40, 40, 41, 0.80);
+                    font-size: 16px;
+                }
+
+                .personal-company-button {
+                    border-radius: 999px;
+                    text-align: center;
+                    font-family: 'Roboto-light';
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: 20px;
+                    letter-spacing: 0.1px;
+                    margin-right: 16px;
+                    width: 77px;
+                }
+
+                .clicked {
+                    background: #FFA01F;
+                    color: #FFF;
+                }
+
+                .not-clicked {
+                    color: #FFA01F;
+                    border: 1px solid #FFA01F;
+                }
+
+                .receiptName {
+                    margin: 8px 0;
+                }
+
+                .nationalID {
+                    margin-top: 8px;
+                }
+
+                .payment-method-icon-text {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .credit-card-block {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 32px;
+                    border-radius: 8px;
+                    background: rgba(40, 40, 41, 0.10);
+                    padding: 16px;
+
+
+                    .tpfield {
+                        background-color: white;
+                        border-radius: 4px;
+                        padding: 10px;
+                        height: 56px;
+                        margin-top: 8px;
+                    }
+
+                    .credit-card-date-ccv-block {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 24px;
+                    }
+                }
             }
         }
     }
 
-    .contact-information {
+    .success {
+
+        @media #{$pc},
+        #{$tablet} {
+            width: 600px;
+        }
+
+        @media #{$mobile} {
+            width: 100%;
+            max-width: 390px;
+        }
+
         display: flex;
         flex-direction: column;
-        gap: 36px;
+        align-items: center;
+        justify-items: center;
+        text-align: center;
+        gap: 24px;
+        margin: 0 auto;
+        padding: 24px;
 
-        .contact-information-note {
-            color: rgba(40, 40, 41, 0.80);
-            font-family: 'Roboto-light';
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 20px;
-            letter-spacing: 0.1px;
-        }
-
-        .checkbox-label-block {
-            margin-left: 0;
-            margin-right: 0;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .checkbox-custom {
-            padding: 0;
-
-            & .MuiSvgIcon-fontSizeMedium {
-                border-radius: var(--CornerRadius-Checkbox, 2px);
-            }
-        }
-
-        .label-custom {
-            font-family: 'Roboto-light';
-            font-style: normal;
-            font-weight: 400;
-            line-height: 24px;
-            /* 133.333% */
-            letter-spacing: 0.5pxㄤ
-        }
-
-        .label-chinese {
+        .success-title {
             color: #070707;
-            font-size: 18px;
+            font-family: "Noto Sans CJK TC";
+            font-size: 32px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            letter-spacing: 0.5px;
         }
 
-        .label-english {
+        .success-title-english {
+            color: #070707;
+            font-family: "Gotham Black";
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            letter-spacing: 0.5px;
+        }
+
+        .note-chinese {
             color: rgba(40, 40, 41, 0.80);
-            font-size: 16px;
-        }
-
-        .personal-button {
-            border-radius: 999px;
-            background: #FFA01F;
-            color: #FFF;
             text-align: center;
-            font-family: 'Roboto-light';
+            font-family: "Noto Sans CJK TC";
             font-size: 14px;
             font-style: normal;
-            font-weight: 500;
-            line-height: 20px;
-            letter-spacing: 0.1px;
-            margin-right: 16px;
-            width: 77px;
+            font-weight: 400;
+            line-height: normal;
+            letter-spacing: 0.5px;
         }
 
-        .company-button {
-            border-radius: 999px;
-            color: #FFA01F;
-            border: 1px solid #FFA01F;
+        .note-english {
+            color: rgba(40, 40, 41, 0.80);
             text-align: center;
-            font-family: 'Roboto-light';
+            font-family: "Noto Sans CJK TC";
             font-size: 14px;
             font-style: normal;
-            font-weight: 500;
-            line-height: 20px;
-            letter-spacing: 0.1px;
-            width: 77px;
+            font-weight: 400;
+            line-height: normal;
+            letter-spacing: 0.5px;
         }
+    }
 
-        .receiptName {
-            margin: 8px 0;
-            width: 100%;
-        }
-
+    .continue-button {
+        border-radius: 999px;
+        padding: 10px 24px;
+        color: #FFF;
+        background-color: #FFA01F;
     }
 }
 
-
-
-.tpfield {
-    height: 55px;
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    margin: 5px 0;
-    border-radius: 5px;
-    padding: 10px;
-}
-
-.display-flex {
-    display: flex;
-}
-
-.space-between {
-    justify-content: space-between;
-}
-
-.align-left {
-    justify-items: left;
-}
-
-.width-300 {
-    width: 300px;
-}
-
-.width-568 {
-    width: 568px;
-}
-
-.width-145 {
-    width: 145px;
-}
-
-.m-b-15 {
-    margin-bottom: 15px;
-}
-
-.font-size-15 {
-    font-size: 15px;
+.width100 {
+    width: 100%;
 }
 
 #pr-button div {
