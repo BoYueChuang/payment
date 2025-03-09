@@ -271,6 +271,7 @@ const CONFGive = () => {
                                 slotProps={{
                                     input: {
                                         startAdornment: <InputAdornment position="start">NT$</InputAdornment>,
+                                        inputMode: "numeric"
                                     },
                                 }}
                                 className="amount basic-formControl"

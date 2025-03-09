@@ -1,14 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   base: "/",
   plugins: [react()],
   build: {
-    outDir: 'dist', // 指定输出路径
-    emptyOutDir: true, // 清空输出目录
-    assetsDir: ".",   // 讓 Vite 把 JS 和 CSS 放到 `dist/` 根目錄
+    outDir: 'dist',
+    emptyOutDir: true,
+    assetsDir: ".",
   },
   server: {
     host: true, // 讓 Vite 綁定 0.0.0.0，允許內網訪問
