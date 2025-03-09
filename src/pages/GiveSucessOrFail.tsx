@@ -1,12 +1,12 @@
 import { Button } from "@mui/material";
 
-const GiveSucessOrFail = () => {
+const GiveSucessOrFail = ({ giveStatus }: { giveStatus: string }) => {
     return (
         <div className="success">
-            <img src="/images/success.png" alt="success" />
+            {giveStatus === "fail" ? <img src="/images/fail.png" alt="fail" /> : <img src="/images/success.png" alt="success" />}
             <div>
-                <p className="success-title">奉獻完成</p>
-                <p className="success-title-english">Give Success</p>
+                <p className="success-title">{giveStatus === "fail" ? "奉獻失敗" : "奉獻完成"}</p>
+                <p className="success-title-english">{giveStatus === "fail" ? "Give Failed" : "Give Success"}</p>
             </div>
             <div>
                 <p className="note-chinese">我們會將奉獻結果寄給您。請留意您的信箱</p>
@@ -14,8 +14,15 @@ const GiveSucessOrFail = () => {
             </div>
             <Button
                 variant="contained"
-                className="continue-button width100">
-                Back to Home
+                className="continue-button width100"
+                onClick={() => {
+                    if (giveStatus === "fail") {
+                        window.location.href = "/CONFGIVE";
+                    } else {
+                        window.location.href = "/";
+                    };
+                }}>
+                {giveStatus === "fail" ? "TRY AGAIN" : "BACK TO HOME"}
             </Button>
         </div>
     );

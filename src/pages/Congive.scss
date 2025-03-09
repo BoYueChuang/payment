@@ -118,7 +118,8 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 }
 
                 .MuiFormHelperText-root {
-                    color: red;
+                    color: #E07A76;
+                    margin-left: 0;
                 }
 
                 .MuiOutlinedInput-notchedOutline {
@@ -159,7 +160,6 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 font-weight: 400;
                 color: #49454F;
                 margin-bottom: 16px;
-                margin-left: 16px;
 
                 @media #{$pc},
                 #{$tablet} {
@@ -456,4 +456,11 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     margin: 10px auto;
     transition: background-color .15s;
     appearance: none !important;
+}
+
+.successAndFailWrapper {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    margin-top: 0px !important;
 }
