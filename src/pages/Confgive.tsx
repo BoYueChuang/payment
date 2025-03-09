@@ -274,7 +274,7 @@ const CONFGive = () => {
                                     },
                                 }}
                                 className="amount basic-formControl"
-                                type="phone"
+                                type="tel"
                                 error={!!errors.amount}
                                 helperText={errors.amount?.message}
                             />
@@ -309,7 +309,7 @@ const CONFGive = () => {
                                             startAdornment: <InputAdornment position="start">+</InputAdornment>,
                                         },
                                     }}
-                                    type="phone"
+                                    type="tel"
                                     error={!!errors.phoneCode}
                                     helperText={errors.phoneCode?.message}
                                     className="phone-code basic-formControl"
@@ -322,7 +322,7 @@ const CONFGive = () => {
                                     id="outlined-required"
                                     placeholder="Mobile Number"
                                     className="phone-number basic-formControl"
-                                    type="phone"
+                                    type="tel"
                                     error={!!errors.phone_number}
                                     helperText={errors.phone_number?.message}
                                     onInput={handlePhoneInputChange}  // 監聽輸入
