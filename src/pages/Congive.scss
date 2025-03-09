@@ -13,7 +13,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 }
 
 @font-face {
-    font-family: 'Roboto-light';
+    font-family: 'Roboto';
     src: url('/fonts/Roboto.woff2') format('woff2')
 }
 
@@ -103,7 +103,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
             .basic-formControl {
                 border-radius: 4px;
-                font-family: 'Roboto-light';
+                font-family: 'Roboto';
 
                 .MuiOutlinedInput-root {
                     border: 0px;
@@ -154,7 +154,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
             }
 
             .exchange-rate {
-                font-family: 'Roboto-light';
+                font-family: 'Roboto';
                 font-size: 14px;
                 font-weight: 400;
                 color: #49454F;
@@ -209,7 +209,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
                 .contact-information-note {
                     color: rgba(40, 40, 41, 0.80);
-                    font-family: 'Roboto-light';
+                    font-family: 'Roboto';
                     font-size: 14px;
                     font-style: normal;
                     font-weight: 400;
@@ -244,6 +244,11 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 }
 
                 .label-custom {
+                    font-family: 'Roboto';
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 24px;
+                    letter-spacing: 0.5px;
 
                     @media #{$pc},
                     #{$tablet} {
@@ -253,12 +258,6 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                     @media #{$mobile} {
                         width: 294px;
                     }
-
-                    font-family: 'Roboto-light';
-                    font-style: normal;
-                    font-weight: 400;
-                    line-height: 24px;
-                    letter-spacing: 0.5px;
                 }
 
                 .label-chinese {
@@ -274,7 +273,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 .personal-company-button {
                     border-radius: 999px;
                     text-align: center;
-                    font-family: 'Roboto-light';
+                    font-family: 'Roboto';
                     font-size: 14px;
                     font-style: normal;
                     font-weight: 500;
@@ -413,7 +412,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
     .dialog-title {
         color: #070707;
-        font-family: 'Roboto-light';
+        font-family: 'Roboto';
         font-size: 24px;
         font-style: normal;
         font-weight: 400;
@@ -423,7 +422,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     .MuiDialogContent-root {
         .dialog-message {
             color: #070707;
-            font-family: 'Roboto-light';
+            font-family: 'Roboto';
             font-size: 14px;
             font-style: normal;
             font-weight: 400;
@@ -433,7 +432,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
     .dialog-button {
         color: #FFA01F;
-        font-family: 'Roboto-light';
+        font-family: 'Roboto';
         font-size: var(--Label-Large-Size, 14px);
         font-size: 14px;
         font-weight: 500;
