@@ -168,7 +168,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
                 @media #{$mobile},
                 #{$tablet} {
-                    width: 120px;
+                    width: 200px;
                 }
             }
 

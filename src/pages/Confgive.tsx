@@ -271,15 +271,16 @@ const CONFGive = () => {
                                 slotProps={{
                                     input: {
                                         startAdornment: <InputAdornment position="start">NT$</InputAdornment>,
-                                        inputMode: "numeric"
                                     },
                                 }}
                                 className="amount basic-formControl"
-                                type="number"
+                                type="phone"
                                 error={!!errors.amount}
                                 helperText={errors.amount?.message}
                             />
-                            <ExchangeRate value={watch('amount')}></ExchangeRate>
+                            {!isNaN(amount) && amount !== null &&
+                                <ExchangeRate value={amount} />
+                            }
                             <TextField
                                 {...register("email", {
                                     required: "Email必填",
@@ -308,6 +309,7 @@ const CONFGive = () => {
                                             startAdornment: <InputAdornment position="start">+</InputAdornment>,
                                         },
                                     }}
+                                    type="phone"
                                     error={!!errors.phoneCode}
                                     helperText={errors.phoneCode?.message}
                                     className="phone-code basic-formControl"
@@ -320,7 +322,7 @@ const CONFGive = () => {
                                     id="outlined-required"
                                     placeholder="Mobile Number"
                                     className="phone-number basic-formControl"
-                                    type="number"
+                                    type="phone"
                                     error={!!errors.phone_number}
                                     helperText={errors.phone_number?.message}
                                     onInput={handlePhoneInputChange}  // 監聽輸入
