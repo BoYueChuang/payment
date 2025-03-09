@@ -10,36 +10,31 @@ import CreditCard from "./CreditCard";
 import ExchangeRate from "./ExchangeRate";
 import { useForm, SubmitHandler } from "react-hook-form";
 import "./Congive.scss";
+import Header from "./Header";
+import GiveSucessOrFail from "./GiveSucessOrFail";
+import ConfDialog from "./ConfDialog";
 
 declare global {
     let TPDirect: any;
 }
 
+interface confGiveProps {
+    amount: number;
+    email: string;
+    phone_number: string;
+    receipt: boolean;
+    paymentType: string;
+    name: string;
+    upload: boolean;
+    phoneCode: string;
+    receiptName: string;
+    nationalid: string;
+    company: string;
+    taxid: string;
+}
+
 const CONFGive = () => {
-    const [scrollOpacity, setScrollOpacity] = useState(0);
-    const [scrollY, setScrollY] = useState(0);
-    const [titleHeight, setTitleHeight] = useState(536);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            setScrollY(currentScrollY);
-
-            // **增加 maxScroll，讓透明度變化更慢**
-            const maxScroll = 400; // **變黑的範圍變大，變化更緩慢**
-            const opacity = Math.min(currentScrollY / maxScroll, 1);
-            setScrollOpacity(opacity);
-
-            // 計算新的高度，最小高度為 124px，最大高度為 536px
-            const newHeight = Math.max(124, 536 - currentScrollY); // 滾動時高度變化
-            setTitleHeight(newHeight);
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const { register, handleSubmit, getValues, watch, formState: { errors } } = useForm<{ amount: number; email: string; phone_number: string; receipt: boolean; paymentType: string; name: string; upload: boolean }>(
+    const { register, handleSubmit, getValues, watch, formState: { errors } } = useForm<confGiveProps>(
         {
             mode: "onChange", // 這裡設定為 onChange
             defaultValues: {
@@ -51,15 +46,117 @@ const CONFGive = () => {
             },
         }
     );
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [titleHeight, setTitleHeight] = useState(536);
+    const [getPaymentType, setPaymentType] = useState("personal");
+    const [message, setMessage] = useState("");
+
     const amount = getValues("amount");
     const amountWatch = watch("amount")
     const email = getValues("email");
-    const upload = getValues("upload");
+    // const upload = getValues("upload");
     const phone_number = getValues("phone_number");
     const paymentType = getValues("paymentType");
+    const paymentWatch = watch("paymentType");
     const name = getValues("name");
 
-    const [getPaymentType, setPaymentType] = useState("personal");
+    useEffect(() => {
+        if (paymentType === "apple-pay" && amount > 0) {
+            setupApplePay();
+        } else if (paymentType === "google-pay" && amount > 0) {
+            setupGooglePay();
+        } else {
+            removePayButton(); // 切換其他付款方式時，刪除按鈕
+        }
+    }, [paymentWatch, amountWatch]); // 監聽付款方式 & 金額
+
+
+    // **移除付款按鈕**
+    const removePayButton = () => {
+        const oldButton = document.querySelector("#pr-button-container");
+        if (oldButton) {
+            oldButton.remove();
+        }
+    };
+
+    // **初始化 Apple Pay**
+    const setupApplePay = () => {
+        const paymentRequest = {
+            supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
+            supportedMethods: ["apple_pay"],
+            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: amount.toString() } }],
+            total: { label: "付給 TapPay", amount: { currency: "TWD", value: amount.toString() } },
+        };
+
+        TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, function (result: any) {
+            if (!result.browserSupportPaymentRequest) {
+                handleOpenAlert("此裝置不支援 Apple Pay");
+                return;
+            };
+
+            if (result.canMakePaymentWithActiveCard) {
+                console.log("✅ 該裝置有支援的卡片可以付款");
+
+                // **確保 container 存在**
+                const container = document.getElementById("pr-button-container");
+                if (!container) {
+                    console.error("❌ 找不到 #pr-button-container");
+                    return;
+                }
+
+                // **動態插入 Apple Pay 按鈕**
+                const newButton = document.createElement("div");
+                newButton.id = "pr-button";
+                container.appendChild(newButton);
+
+                const button = document.getElementById("pr-button");
+                if (button) {
+                    TPDirect.paymentRequestApi.setupTappayPaymentButton("#pr-button", (getPrimeResult: any) => {
+                        console.log("Prime 取得成功：", getPrimeResult);
+                        postPay(getPrimeResult.prime);
+                    });
+                } else {
+                    console.error("❌ Apple Pay 按鈕未正確插入 DOM");
+                };
+            } else {
+                handleOpenAlert("此裝置沒有支援的卡片可以付款");
+            };
+        });
+    };
+
+    const setupGooglePay = () => {
+
+        var paymentRequest = {
+            allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
+            price: "123", // optional
+            currency: "TWD", // optional
+        }
+
+        TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (result: any) {
+            if (result.canUseGooglePay) {
+                TPDirect.googlePay.setupGooglePayButton({
+                    el: "#pr-button-container",
+                    color: "black",
+                    type: "long",
+                    getPrimeCallback: function (prime: string) {
+                        console.log("Prime 取得成功：", prime);
+                        postPay(prime);
+                    }
+                })
+            } else {
+                console.log("❌ 無法使用 Google Pay");
+            };
+        })
+    }
+
+    // 輸入框內禁止輸入 0 開頭
+    const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        // 如果輸入的值是 0 開頭，去掉 0
+        if (value.startsWith('0')) {
+            e.target.value = value.slice(1);
+        }
+    };
 
     useEffect(() => {
         console.log(register("amount"));
@@ -84,15 +181,20 @@ const CONFGive = () => {
             countryCode: 'TW',
         });
 
-        TPDirect.paymentRequestApi.setupPayWithGoogle({
-            allowedPaymentMethods: ['CARD', 'TOKENIZED_CARD'],
+        const googlePaySetting = {
+            googleMerchantId: "BAUJoCRnzJKrsjGt8M+GSjeGNIag2Ff+uPgGvBw5a6V9bxg/ytnfUfUg0bnesvD+fJjQrrrK7ZSey5xybja1wEQ=",
+            allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+            merchantName: "TapPay Test!",
+            emailRequired: true, // optional
+            shippingAddressRequired: true, // optional,
+            billingAddressRequired: true, // optional
+            billingAddressFormat: "MIN", // FULL, MIN
             allowPrepaidCards: true,
-            billingAddressRequired: false,
-            billingAddressFormat: 'MIN',
-        });
+            allowedCountryCodes: ['TW'],
+            phoneNumberRequired: true // optional
+        }
 
-        applePayHandleSubmit();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        TPDirect.googlePay.setupGooglePay(googlePaySetting);
     }, []);
 
     useEffect(() => {
@@ -117,77 +219,6 @@ const CONFGive = () => {
     //         postPay(result.card.prime);
     //     });
     // };
-
-    // Apple Pay 按鈕點擊事件
-    const applePayHandleSubmit = () => {
-        // 建立 paymentRequest 物件
-        const paymentRequest = {
-            supportedNetworks: ['AMEX', 'JCB', 'MASTERCARD', 'VISA'],
-            supportedMethods: ['apple_pay'],
-
-            displayItems: [{
-                label: 'TapPay - iPhone8',
-                amount: {
-                    currency: 'TWD',
-                    value: '1.00'
-                }
-            }],
-            total: {
-                label: '付給 TapPay',
-                amount: {
-                    currency: 'TWD',
-                    value: '1.00'
-                }
-            },
-            shippingOptions: [{
-                id: "standard",
-                label: "🚛 Ground Shipping (2 days)",
-                detail: 'Estimated delivery time: 2 days',
-                amount: {
-                    currency: "TWD",
-                    value: "5.00"
-                }
-            },
-            {
-                id: "drone",
-                label: "🚀 Drone Express (2 hours)",
-                detail: 'Estimated delivery time: 2 hours',
-                amount: {
-                    currency: "TWD",
-                    value: "25.00"
-                }
-            },
-            ],
-            options: {
-                requestPayerEmail: false,
-                requestPayerName: false,
-                requestPayerPhone: false,
-                requestShipping: false,
-                shippingType: 'shipping'
-            }
-        };
-
-        TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, function (result: any) {
-            if (!result.browserSupportPaymentRequest) {
-                console.log('❌ 瀏覽器不支援 PaymentRequest');
-                return;
-            };
-
-            if (result.canMakePaymentWithActiveCard) {
-                console.log('✅ 該裝置有支援的卡片可以付款');
-                console.log(TPDirect.paymentRequestApi)
-                TPDirect.paymentRequestApi.setupTappayPaymentButton('#pr-button', (getPrimeResult: any) => {
-                    console.log('Prime 取得成功：', getPrimeResult);
-
-                    postPay(getPrimeResult.prime);
-                });
-            } else if (result.canMakePaymentWithActiveCard === false) {
-                console.log('⚠️ 該裝置沒有支援的卡片可以付款');
-            } else {
-                console.warn('⚠️ 無法確定裝置是否支援 Apple Pay，請檢查回傳值', result);
-            };
-        });
-    }
 
     // api
     const postPay = (prime: string) => {
@@ -214,21 +245,18 @@ const CONFGive = () => {
         console.log(data);
     };
 
+    const handleOpenAlert = (message: string) => {
+        setMessage(message);
+        setAlertOpen(true);
+    };
+
+    const handleCloseAlert = () => {
+        setAlertOpen(false);
+    };
+
     return (
         <div>
-            <div
-                className="title"
-                style={{
-                    "--scroll-opacity": scrollOpacity,
-                    height: `${titleHeight}px`, // 動態改變高度
-                } as React.CSSProperties}
-            >
-                <div className="title-block"
-                    style={{ color: titleHeight < 536 ? "#F1D984" : "#FFF", bottom: titleHeight < 536 ? "10px" : "20px" }}>
-                    <p className="title-name">{titleHeight < 536 ? "’25" : "2025"} <br style={{ display: titleHeight < 536 ? "none" : "block" }}></br>{titleHeight < 536 ? "THE HOPE Conference" : "THE HOPE 特會"}</p>
-                    <p className="title-property">GIVE</p>
-                </div>
-            </div>
+            <Header titleHeight={titleHeight} setTitleHeight={setTitleHeight}></Header>
             <div className="wrapper"
                 style={{ marginTop: titleHeight > 124 ? `${titleHeight + scrollY}px` : "530px" }}>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -269,23 +297,32 @@ const CONFGive = () => {
                             <Box className="phone-block">
                                 <TextField
                                     id="outlined-read-only-input"
-                                    defaultValue="+886"
+                                    {...register("phoneCode", {
+                                        required: "國碼必填"
+                                    })}
+                                    defaultValue="886"
                                     slotProps={{
                                         input: {
-                                            readOnly: true,
+                                            readOnly: false,
+                                            startAdornment: <InputAdornment position="start">+</InputAdornment>,
                                         },
                                     }}
+                                    error={!!errors.phoneCode}
+                                    helperText={errors.phoneCode?.message}
                                     className="phone-code basic-formControl"
                                 />
                                 <TextField
-                                    {...register("phone_number", { required: "電話必填" })}
+                                    {...register("phone_number", {
+                                        required: "電話必填",
+                                        validate: (value) => value.length === 9 || "電話號碼必須為 9 碼"
+                                    })}
                                     id="outlined-required"
                                     placeholder="Mobile Number"
                                     className="phone-number basic-formControl"
-                                    name="phone_number"
                                     type="number"
                                     error={!!errors.phone_number}
                                     helperText={errors.phone_number?.message}
+                                    onInput={handlePhoneInputChange}  // 監聽輸入
                                 />
                             </Box>
                             <Box className="contact-information">
@@ -310,21 +347,23 @@ const CONFGive = () => {
                                                 >個人</Button>
                                                 <Button onClick={() => setPaymentType("company")} className={`personal-company-button ${getPaymentType === "company" ? "clicked" : "not-clicked"}`}>企業</Button>
                                             </div>
-                                            <div>
-                                                <p className="label-chinese">收據姓名</p>
-                                                <p className="label-english">Receipt Name</p>
-                                                <TextField
-                                                    id="outlined-required"
-                                                    className="receiptName width100 basic-formControl"
-                                                    name="receiptName"
-                                                />
-                                                <p className="contact-information-note">如有報稅需求，請填寫與台灣身分證相符的姓名</p>
-                                            </div>
+                                            {getPaymentType === "personal" && (
+                                                <div>
+                                                    <p className="label-chinese">收據姓名</p>
+                                                    <p className="label-english">Receipt Name</p>
+                                                    <TextField
+                                                        id="outlined-required"
+                                                        className="receiptName width100 basic-formControl"
+                                                        {...register("receiptName")}
+                                                    />
+                                                    <p className="contact-information-note">如有報稅需求，請填寫與台灣身分證相符的姓名</p>
+                                                </div>
+                                            )}
                                         </>
                                     )
                                     }
                                 </div>
-                                {watch("receipt") && (
+                                {watch("receipt") && getPaymentType === "company" && (
                                     <div className="company-tax-block">
                                         <div>
                                             <p className="label-chinese">企業登記全名</p>
@@ -332,7 +371,7 @@ const CONFGive = () => {
                                             <TextField
                                                 id="outlined-required"
                                                 className="receiptName width100 basic-formControl"
-                                                name="companyName"
+                                                {...register("company")}
                                             />
                                         </div>
                                         <div>
@@ -341,16 +380,16 @@ const CONFGive = () => {
                                             <TextField
                                                 id="outlined-required"
                                                 className="nationalID width100 basic-formControl"
-                                                name="taxID"
+                                                {...register("taxid")}
                                             />
                                         </div>
                                     </div>
                                 )}
                                 <FormControlLabel
                                     className="checkbox-label-block"
-                                    {...register("upload")}
                                     control={
-                                        <Checkbox className="checkbox-custom" />
+                                        <Checkbox className="checkbox-custom"
+                                            {...register("upload")} />
                                     }
                                     label={<div className="label-custom">
                                         <p className="label-chinese">是否上傳國稅局？(台灣報稅需要)</p>
@@ -364,7 +403,7 @@ const CONFGive = () => {
                                         <TextField
                                             id="outlined-required"
                                             className="nationalID width100 basic-formControl"
-                                            name="nationalID"
+                                            {...register("nationalid")}
                                         />
                                     </div>
                                 )}
@@ -435,7 +474,7 @@ const CONFGive = () => {
                                 </Select>
                                 <CreditCard paymentType={watch("paymentType")} register={register} errors={errors}></CreditCard>
 
-                                {paymentType !== "apple-pay" && (
+                                {paymentType === "credit-card" && (
                                     <Button
                                         type="submit"
                                         variant="contained"
@@ -444,29 +483,20 @@ const CONFGive = () => {
                                         CONTINUE
                                     </Button>
                                 )}
-
-                                <div id="pr-button" style={{ display: "none" }}></div>
+                                {paymentType === "apple-pay" && (
+                                    <div id="pr-button-container"></div>
+                                )}
                             </Box>
                         </Box>
                     </Box>
                 </form>
-
-                <div className="success">
-                    <img src="/images/success.png" alt="" />
-                    <div>
-                        <p className="success-title">奉獻完成</p>
-                        <p className="success-title-english">Give Success</p>
-                    </div>
-                    <div>
-                        <p className="note-chinese">我們會將奉獻結果寄給您。請留意您的信箱</p>
-                        <p className="note-english">We will email you the result of giving. <br></br>Please check your email.</p>
-                    </div>
-                    <Button
-                        variant="contained"
-                        className="continue-button width100">
-                        Back to Home
-                    </Button>
-                </div>
+                <GiveSucessOrFail></GiveSucessOrFail>
+                <ConfDialog
+                    open={alertOpen}
+                    title="錯誤"
+                    message={message}
+                    onClose={handleCloseAlert}
+                    cancelText="關閉"></ConfDialog>
             </div>
         </div>
     );

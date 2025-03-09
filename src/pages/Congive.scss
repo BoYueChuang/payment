@@ -184,7 +184,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 width: 100%;
 
                 .phone-code {
-                    width: 130px;
+                    width: 140px;
                 }
 
                 .phone-number {
@@ -244,11 +244,21 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 }
 
                 .label-custom {
+
+                    @media #{$pc},
+                    #{$tablet} {
+                        width: 400px;
+                    }
+
+                    @media #{$mobile} {
+                        width: 294px;
+                    }
+
                     font-family: 'Roboto-light';
                     font-style: normal;
                     font-weight: 400;
                     line-height: 24px;
-                    letter-spacing: 0.5pxㄤ
+                    letter-spacing: 0.5px;
                 }
 
                 .label-chinese {
@@ -326,6 +336,14 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     }
 
     .success {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-items: center;
+        text-align: center;
+        gap: 24px;
+        margin: 0 auto;
+        padding: 24px;
 
         @media #{$pc},
         #{$tablet} {
@@ -336,15 +354,6 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
             width: 100%;
             max-width: 390px;
         }
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-items: center;
-        text-align: center;
-        gap: 24px;
-        margin: 0 auto;
-        padding: 24px;
 
         .success-title {
             color: #070707;
@@ -397,12 +406,45 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     }
 }
 
+.MuiDialog-container {
+    .MuiPaper-root {
+        width: 312px;
+    }
+
+    .dialog-title {
+        color: #070707;
+        font-family: 'Roboto-light';
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 32px;
+    }
+
+    .MuiDialogContent-root {
+        .dialog-message {
+            color: #070707;
+            font-family: 'Roboto-light';
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 20px;
+        }
+    }
+
+    .dialog-button {
+        color: #FFA01F;
+        font-family: 'Roboto-light';
+        font-size: var(--Label-Large-Size, 14px);
+        font-size: 14px;
+        font-weight: 500;
+    }
+}
+
 .width100 {
     width: 100%;
 }
 
 #pr-button div {
-    width: 300px;
     min-height: 30px;
     border: 1px solid black;
     background-image: -webkit-named-image(apple-pay-logo-white);
