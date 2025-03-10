@@ -30,15 +30,15 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
     @media #{$pc},
     #{$tablet} {
-        background-image: url('/images/pc-banner-middle-size.png');
+        background-image: url('/images/pc-banner-middle-size.webp');
     }
 
     @media #{$tablet} {
-        background-image: url('/images/pc-banner-large-size.png');
+        background-image: url('/images/pc-banner-large-size.webp');
     }
 
     @media #{$mobile} {
-        background-image: url('/images/mobile-banner.png');
+        background-image: url('/images/mobile-banner.webp');
     }
 
     // 黑色遮罩 (會根據滾動改變透明度)
@@ -415,15 +415,15 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     }
 
     .apple-pay-button {
-        background-image: url('/images/apple-pay-icon.png');
+        background-image: url('/images/apple-pay-icon.webp');
     }
 
     .google-pay-button {
-        background-image: url('/images/google-pay-icon.png');
+        background-image: url('/images/google-pay-icon.webp');
     }
 
     .samsung-pay-button {
-        background-image: url('/images/samsung-pay-icon.png');
+        background-image: url('/images/samsung-pay-icon.webp');
     }
 }
 
