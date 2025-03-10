@@ -184,7 +184,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 width: 100%;
 
                 .phone-code {
-                    width: 140px;
+                    width: 160px;
                 }
 
                 .phone-number {
@@ -403,6 +403,28 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
         color: #FFF;
         background-color: #FFA01F;
     }
+
+    .fake-pay-button {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-color: black;
+        background-position: 50% 50%;
+        border-radius: 5px;
+        width: 100%;
+        height: 44.5px;
+    }
+
+    .apple-pay-button {
+        background-image: url('/images/apple-pay-icon.png');
+    }
+
+    .google-pay-button {
+        background-image: url('/images/google-pay-icon.png');
+    }
+
+    .samsung-pay-button {
+        background-image: url('/images/samsung-pay-icon.png');
+    }
 }
 
 .MuiDialog-container {
@@ -443,7 +465,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     width: 100%;
 }
 
-#pr-button div {
+#apple-pay-button-container {
     min-height: 30px;
     border: 1px solid black;
     background-image: -webkit-named-image(apple-pay-logo-white);

@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, Select, MenuItem, ListItemIcon } from "@mui/material";
+import { Button } from "@mui/material";
 import { TextField, InputAdornment, Box } from "@mui/material";
 import { Checkbox, FormControlLabel } from "@mui/material";
-import { SiApplepay } from "react-icons/si";
-import { FaGooglePay } from "react-icons/fa6";
-import { SiSamsungpay } from "react-icons/si";
-import { CiCreditCard1 } from "react-icons/ci";
 import CreditCard from "./CreditCard";
 import ExchangeRate from "./ExchangeRate";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -13,6 +9,7 @@ import "./Congive.scss";
 import Header from "./Header";
 import GiveSucessOrFail from "./GiveSucessOrFail";
 import ConfDialog from "./ConfDialog";
+import PaymentSelect from "./PaymentSelect";
 
 declare global {
     let TPDirect: any;
@@ -34,7 +31,7 @@ interface confGiveProps {
 }
 
 const CONFGive = () => {
-    const { register, handleSubmit, getValues, watch, formState: { errors } } = useForm<confGiveProps>(
+    const { register, handleSubmit, getValues, watch, formState: { errors, isValid } } = useForm<confGiveProps>(
         {
             mode: "onChange", // 這裡設定為 onChange
             defaultValues: {
@@ -51,14 +48,14 @@ const CONFGive = () => {
     const [getPaymentType, setPaymentType] = useState("personal");
     const [message, setMessage] = useState("");
     const [giveStatus, setGiveStatus] = useState("form");
-
+    const [isApplePayReady, setIsApplePayReady] = useState(false);
+    const [isGooglePayReady, setIsGooglePayReady] = useState(false);
+    const [isSamsungPayReady, setIsSamsungPayReady] = useState(false);
+    const [isPayError, setPayError] = useState(true);
     const amount = getValues("amount");
-    const email = getValues("email");
-    // const upload = getValues("upload");
-    const phone_number = getValues("phone_number");
     const paymentType = getValues("paymentType");
-    const name = getValues("name");
 
+    // **初始化設定 **
     useEffect(() => {
         console.log("TapPay SDK 加載完成");
         TPDirect.setupSDK(
@@ -66,41 +63,60 @@ const CONFGive = () => {
             import.meta.env.VITE_TAPPAY_APP_KEY || '',
             'sandbox'
         );
-
         TPDirect.paymentRequestApi.checkAvailability();
-
         TPDirect.paymentRequestApi.setupApplePay({
-            merchantIdentifier: 'APMEKWC6Lx70yYyTyxpg',
+            merchantIdentifier: import.meta.env.VITE_APPLE_MERCHANT_ID,
             countryCode: 'TW',
         });
-
-        const googlePaySetting = {
+        TPDirect.googlePay.setupGooglePay({
             googleMerchantId: import.meta.env.VITE_GOOGLE_MERCHANT_ID,
             allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-            merchantName: "TapPay Test!",
-            emailRequired: true, // optional
-            shippingAddressRequired: true, // optional,
-            billingAddressRequired: true, // optional
-            billingAddressFormat: "MIN", // FULL, MIN
-            allowPrepaidCards: true,
+            merchantName: "The Hope",
             allowedCountryCodes: ['TW'],
-            phoneNumberRequired: true // optional
-        }
-
-        TPDirect.googlePay.setupGooglePay(googlePaySetting);
+        });
+        TPDirect.samsungPay.setup({
+            country_code: 'tw'
+        })
     }, []);
 
+    useEffect(() => {
+        console.log("表單錯誤狀態：", errors, isValid);
+        if (isValid) {
+            switch (paymentType) {
+                case "apple-pay":
+                    setIsApplePayReady(true);
+                    setupApplePay();
+                    break;
+                case "google-pay":
+                    setIsGooglePayReady(true);
+                    setupGooglePay();
+                    break;
+                case "samsung-pay":
+                    setIsSamsungPayReady(true);
+                    setupSamSungPay();
+                    break;
+            };
+        } else {
+            setIsApplePayReady(false);
+            setIsGooglePayReady(false);
+            setIsSamsungPayReady(false);
+        };
+        // eslint-disable-next-line
+    }, [errors, isValid]);
 
-    // **移除付款按鈕**
-    const removePayButton = () => {
-        const oldButton = document.querySelector("#pr-button-container");
-        if (oldButton) {
-            oldButton.remove();
-        }
+
+    // **提交**
+    const onSubmit: SubmitHandler<confGiveProps> = (data) => {
+        if (data.paymentType === "credit-card") {
+            setupCreditCard();
+        };
+
+        console.log("提交表單:", data);
     };
 
-    // **初始化 Apple Pay**
-    const setupApplePay = () => {
+
+    // **設置 Apple Pay**
+    const setupApplePay = async () => {
         const paymentRequest = {
             supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             supportedMethods: ["apple_pay"],
@@ -108,76 +124,134 @@ const CONFGive = () => {
             total: { label: "付給 TapPay", amount: { currency: "TWD", value: amount.toString() } },
         };
 
-        TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, function (result: any) {
-            if (!result.browserSupportPaymentRequest) {
-                handleOpenAlert("此裝置不支援 Apple Pay");
-                return;
-            };
-
-            if (result.canMakePaymentWithActiveCard) {
-                console.log("✅ 該裝置有支援的卡片可以付款");
-
-                // **確保 container 存在**
-                const container = document.getElementById("pr-button-container");
-                if (!container) {
-                    console.error("❌ 找不到 #pr-button-container");
-                    return;
-                }
-
-                // **動態插入 Apple Pay 按鈕**
-                const newButton = document.createElement("div");
-                newButton.id = "pr-button";
-                container.appendChild(newButton);
-
-                const button = document.getElementById("pr-button");
-                if (button) {
-                    TPDirect.paymentRequestApi.setupTappayPaymentButton("#pr-button", (getPrimeResult: any) => {
-                        console.log("Prime 取得成功：", getPrimeResult);
-                        postPay(getPrimeResult.prime);
-                    });
-                } else {
-                    console.error("❌ Apple Pay 按鈕未正確插入 DOM");
-                };
-            } else {
-                handleOpenAlert("此裝置沒有支援的卡片可以付款");
-            };
+        const result: {
+            browserSupportPaymentRequest: boolean,
+            canMakePaymentWithActiveCard: boolean
+        } = await new Promise((resolve) => {
+            TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, resolve);
         });
-    };
 
-    const setupGooglePay = () => {
-        var paymentRequest = {
-            allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
-            price: "123", // optional
-            currency: "TWD", // optional
-        }
+        if (!result.browserSupportPaymentRequest) {
+            setPayError(false);
+            handleOpenAlert("此裝置不支援 Apple Pay");
+            return;
+        };
 
-        TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (result: any) {
-            if (result.canUseGooglePay) {
-                TPDirect.googlePay.setupGooglePayButton({
-                    el: "#pr-button-container",
-                    color: "black",
-                    type: "long",
-                    getPrimeCallback: function (prime: string) {
-                        console.log("Prime 取得成功：", prime);
-                        postPay(prime);
-                    }
-                })
-            } else {
-                console.log("❌ 無法使用 Google Pay");
-            };
-        })
-    }
+        if (!result.canMakePaymentWithActiveCard) {
+            setPayError(false);
+            handleOpenAlert("此裝置沒有支援的卡片可以付款");
+            return;
+        };
 
-    // 輸入框內禁止輸入 0 開頭
-    const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        // 如果輸入的值是 0 開頭，去掉 0
-        if (value.startsWith('0')) {
-            e.target.value = value.slice(1);
+        setPayError(true);
+        console.log("✅ 該裝置有支援的卡片可以付款");
+
+        const button = document.querySelector("#apple-pay-button-container");
+        if (button) {
+            TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
+                console.log("Prime 取得成功：", getPrimeResult);
+                postPay(getPrimeResult.prime);
+            });
+        } else {
+            setPayError(false);
+            console.error("❌ Apple Pay 按鈕未正確插入 DOM");
         };
     };
 
-    // api
+
+    // **設置 Google Pay**
+    const setupGooglePay = async () => {
+        const paymentRequest = {
+            allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
+            price: amount, // optional
+            currency: "TWD", // optional
+        }
+
+        const result: {
+            canUseGooglePay: boolean
+        } = await new Promise((resolve) => {
+            TPDirect.googlePay.setupPaymentRequest(paymentRequest, resolve);
+        });
+
+        if (!result.canUseGooglePay) {
+            setPayError(false);
+            handleOpenAlert("此裝置不支援 Google Pay");
+            return;
+        };
+
+        setPayError(true);
+        console.log("✅ 該裝置有支援的卡片可以付款");
+
+        TPDirect.googlePay.setupGooglePayButton({
+            el: "#google-pay-button-container",
+            color: "black",
+            type: "long",
+            getPrimeCallback: function (prime: string) {
+                console.log("Prime 取得成功：", prime);
+                postPay(prime);
+            }
+        })
+    }
+
+
+    // **設置 Samsung Pay**
+    const setupSamSungPay = async () => {
+        const paymentRequest = {
+            supportedNetworks: ['MASTERCARD', 'VISA'],
+            total: {
+                label: 'The Hope',
+                amount: {
+                    currency: 'TWD',
+                    value: '1.00'
+                }
+            }
+        }
+        const result: {
+            canUseGooglePay: boolean
+        } = await new Promise((resolve) => {
+            TPDirect.samsungPay.setupPaymentRequest(paymentRequest, resolve);
+        });
+
+        if (!result) {
+            setPayError(false);
+            console.error("❌ 此裝置不支援 Samsung Pay");
+            return;
+        };
+
+        setPayError(true);
+        console.log("✅ 該裝置有支援的卡片可以付款");
+
+
+        TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
+            color: 'black',
+            type: 'pay',
+            shape: 'rectangular'
+        }, function (result: any) {
+            if (result.status === 0) {
+                console.log("✅ 取得 Prime 成功:", result.prime);
+                postPay(result.prime);
+            } else {
+                console.error("❌ 取得 Prime 失敗:", result);
+            }
+        });
+    }
+
+
+    // **設置 信用卡**
+    const setupCreditCard = () => {
+        TPDirect.card.getPrime((result: any) => {
+            if (result.status !== 0) {
+                document.body.style.backgroundColor = "#C4D9D4";
+                document.querySelector(".wrapper")?.classList.add("successAndFailWrapper");
+                setGiveStatus("fail");
+                return;
+            };
+            // 傳送至後端 API
+            postPay(result.card.prime);
+        });
+    }
+
+    // **傳送至後端 API**
     const postPay = (prime: string) => {
         fetch('https://repo-tappy.vercel.app/api/payment', {
             method: 'POST',
@@ -185,11 +259,7 @@ const CONFGive = () => {
             body: JSON.stringify({
                 prime: prime,
                 amount: Number(amount),
-                cardholder: {
-                    name: name,
-                    email: email,
-                    phone_number: phone_number,
-                },
+                cardholder: getValues(),
             }),
         })
             .then((res) => res.json())
@@ -206,55 +276,22 @@ const CONFGive = () => {
             });
     }
 
-    const setupCreditCard = () => {
-        TPDirect.card.getPrime((result: any) => {
-            if (result.status !== 0) {
-                document.body.style.backgroundColor = "#C4D9D4";
-                document.querySelector(".wrapper")?.classList.add("successAndFailWrapper");
-                setGiveStatus("fail");
-                return;
-            };
-            // 傳送至後端 API
-            postPay(result.card.prime);
-        });
-    }
-
-    // onSubmit 會在表單提交時被調用
-    const onSubmit: SubmitHandler<confGiveProps> = (data) => {
-        if (data.paymentType === "apple-pay") {
-            setupApplePay();
-        } else if (data.paymentType === "google-pay") {
-            setupGooglePay();
-        } else if (data.paymentType === "credit-card") {
-            setupCreditCard();
-        } else {
-            removePayButton();
+    // **輸入框內禁止輸入 0 開頭**
+    const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        // 如果輸入的值是 0 開頭，去掉 0
+        if (value.startsWith('0')) {
+            e.target.value = value.slice(1);
         };
     };
 
-    useEffect(() => {
-        const button = document.getElementById("pr-button");
-        if (button) {
-            button.addEventListener("click", handleApplePayClick);
-        }
-
-        return () => {
-            if (button) {
-                button.removeEventListener("click", handleApplePayClick);
-            }
-        };
-    }, []);
-
-    const handleApplePayClick = () => {
-        console.log("🍏 Apple Pay 按鈕被點擊！");
-        // 你可以在這裡執行額外的檢查，例如表單驗證
-    };
-
+    // **設置 Alert **
     const handleOpenAlert = (message: string) => {
         setMessage(message);
         setAlertOpen(true);
     };
 
+    // **關閉 Alert **
     const handleCloseAlert = () => {
         setAlertOpen(false);
     };
@@ -440,71 +477,7 @@ const CONFGive = () => {
                                             />
                                         </div>
                                     )}
-                                    <Select
-                                        displayEmpty
-                                        {...register("paymentType")}
-                                        defaultValue={"credit-card"}
-                                        className="payment-method width100 basic-formControl"
-                                        renderValue={(selected) => {
-                                            let icon, text;
-
-                                            // 動態選擇對應的圖標和文字
-                                            switch (selected) {
-                                                case "apple-pay":
-                                                    icon = <SiApplepay size={24} />;
-                                                    text = "Apple Pay";
-                                                    break;
-                                                case "google-pay":
-                                                    icon = <FaGooglePay size={24} />;
-                                                    text = "Google Pay";
-                                                    break;
-                                                case "samsung-pay":
-                                                    icon = <SiSamsungpay size={24} />;
-                                                    text = "Samsung Pay";
-                                                    break;
-                                                case "credit-card":
-                                                    icon = <CiCreditCard1 size={24} />;
-                                                    text = "Credit Card";
-                                                    break;
-                                                default:
-                                                    icon = <SiApplepay size={24} />;
-                                                    text = "Apple Pay";
-                                                    break;
-                                            }
-
-                                            return (
-                                                <Box className="payment-method-icon-text">
-                                                    {icon}
-                                                    {text}
-                                                </Box>
-                                            );
-                                        }}
-                                    >
-                                        <MenuItem value="apple-pay">
-                                            <ListItemIcon>
-                                                <SiApplepay size={24} />
-                                            </ListItemIcon>
-                                            Apple Pay
-                                        </MenuItem>
-                                        <MenuItem value="google-pay">
-                                            <ListItemIcon>
-                                                <FaGooglePay size={24} />
-                                            </ListItemIcon>
-                                            Google Pay
-                                        </MenuItem>
-                                        <MenuItem value="samsung-pay">
-                                            <ListItemIcon>
-                                                <SiSamsungpay size={24} />
-                                            </ListItemIcon>
-                                            Samsung Pay
-                                        </MenuItem>
-                                        <MenuItem value="credit-card">
-                                            <ListItemIcon>
-                                                <CiCreditCard1 size={24} />
-                                            </ListItemIcon>
-                                            Credit Card
-                                        </MenuItem>
-                                    </Select>
+                                    <PaymentSelect register={register}></PaymentSelect>
                                     <CreditCard paymentType={watch("paymentType")} register={register} errors={errors}></CreditCard>
                                     {paymentType === "credit-card" && (
                                         <Button
@@ -515,7 +488,38 @@ const CONFGive = () => {
                                         </Button>
                                     )}
                                     {paymentType === "apple-pay" && (
-                                        <div id="pr-button-container"></div>
+                                        <>
+                                            {!isApplePayReady ? (
+                                                <button type="submit" className="fake-pay-button apple-pay-button"></button>
+                                            ) : (
+                                                isPayError && <div id="apple-pay-button-container"></div>
+                                            )}
+                                        </>
+
+                                    )}
+                                    {paymentType === "google-pay" && (
+                                        <>
+                                            {!isGooglePayReady && isPayError ? (
+                                                <button
+                                                    type="submit"
+                                                    className="fake-pay-button google-pay-button"
+                                                ></button>
+                                            ) : (
+                                                isPayError && <div id="google-pay-button-container"></div>
+                                            )}
+                                        </>
+                                    )}
+                                    {paymentType === "samsung-pay" && (
+                                        <>
+                                            {!isSamsungPayReady && isPayError ? (
+                                                <button
+                                                    type="submit"
+                                                    className="fake-pay-button samsung-pay-button"
+                                                ></button>
+                                            ) : (
+                                                isPayError && <div id="samsung-pay-button-container"></div>
+                                            )}
+                                        </>
                                     )}
                                 </Box>
                             </Box>
