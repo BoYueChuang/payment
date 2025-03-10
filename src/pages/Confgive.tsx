@@ -131,6 +131,9 @@ const CONFGive = () => {
             TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, resolve);
         });
 
+        console.log(result, "result of Apple Pay");
+
+
         if (!result.browserSupportPaymentRequest) {
             setPayError(false);
             handleOpenAlert("此裝置不支援 Apple Pay");
@@ -172,6 +175,9 @@ const CONFGive = () => {
         } = await new Promise((resolve) => {
             TPDirect.googlePay.setupPaymentRequest(paymentRequest, resolve);
         });
+
+        console.log(result, "resultGooglePay");
+
 
         if (!result.canUseGooglePay) {
             setPayError(false);
