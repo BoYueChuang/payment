@@ -465,7 +465,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     width: 100%;
 }
 
-#apple-pay-button-container {
+#apple-pay-button-container div {
     min-height: 30px;
     border: 1px solid black;
     background-image: -webkit-named-image(apple-pay-logo-white);
