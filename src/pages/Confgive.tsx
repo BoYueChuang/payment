@@ -170,33 +170,25 @@ const CONFGive = () => {
             currency: "TWD", // optional
         }
 
-        const result: {
-            canUseGooglePay: boolean
-        } = await new Promise((resolve) => {
-            TPDirect.googlePay.setupPaymentRequest(paymentRequest, resolve);
+        TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (result: any) {
+            if (result.canUseGooglePay) {
+                setPayError(true);
+                console.log("✅ 該裝置有支援的卡片可以付款");
+                TPDirect.googlePay.setupGooglePayButton({
+                    el: "#google-pay-button-container",
+                    color: "black",
+                    type: "long",
+                    getPrimeCallback: function (prime: string) {
+                        console.log("Prime 取得成功：", prime);
+                        postPay(prime);
+                    }
+                })
+            } else {
+                setPayError(false);
+                handleOpenAlert("此裝置不支援 Google Pay");
+                return;
+            };
         });
-
-        console.log(result, "resultGooglePay");
-
-
-        if (!result.canUseGooglePay) {
-            setPayError(false);
-            handleOpenAlert("此裝置不支援 Google Pay");
-            return;
-        };
-
-        setPayError(true);
-        console.log("✅ 該裝置有支援的卡片可以付款");
-
-        TPDirect.googlePay.setupGooglePayButton({
-            el: "#google-pay-button-container",
-            color: "black",
-            type: "long",
-            getPrimeCallback: function (prime: string) {
-                console.log("Prime 取得成功：", prime);
-                postPay(prime);
-            }
-        })
     }
 
 
@@ -212,21 +204,10 @@ const CONFGive = () => {
                 }
             }
         }
-        const result: {
-            canUseGooglePay: boolean
-        } = await new Promise((resolve) => {
-            TPDirect.samsungPay.setupPaymentRequest(paymentRequest, resolve);
-        });
-
-        if (!result) {
-            setPayError(false);
-            console.error("❌ 此裝置不支援 Samsung Pay");
-            return;
-        };
+        TPDirect.samsungPay.setupPaymentRequest(paymentRequest)
 
         setPayError(true);
         console.log("✅ 該裝置有支援的卡片可以付款");
-
 
         TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
             color: 'black',
