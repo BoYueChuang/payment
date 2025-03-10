@@ -23,15 +23,18 @@ const PaymentSelect: React.FC<PaymentSelectProps> = (props) => {
     useEffect(() => {
         const userAgent = navigator.userAgent;
         const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
+        const isMac = /Macintosh|Mac OS X/.test(userAgent);
         const isAndroid = /Android/.test(userAgent);
-        const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent); // 判斷 Safari
+        const isSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(userAgent);
+        console.log(isSafari, isIOS, isMac);
+
         const isChrome = /Chrome/.test(userAgent) && !/Edge|OPR|SamsungBrowser/.test(userAgent); // 排除 Edge、Opera、Samsung
         const isSamsungBrowser = /SamsungBrowser/.test(userAgent);
 
         setPaymentOptions((options) =>
             options.filter((option) => {
                 if (option.value === "apple-pay") {
-                    return isIOS && isSafari; // 只有 iOS + Safari 才顯示
+                    return (isIOS || isMac) && isSafari; // 只有 iOS + Safari 才顯示
                 }
                 if (option.value === "google-pay") {
                     return isChrome || isAndroid; // 只有 Chrome 或 Android 才顯示
