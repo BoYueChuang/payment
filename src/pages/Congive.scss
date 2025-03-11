@@ -427,6 +427,28 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     }
 }
 
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 999;
+
+    .loading-icon {
+        color: rgb(241, 217, 132);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 1000;
+        transform: translate(-50%, -50%);
+    }
+}
+
 .MuiDialog-container {
     .MuiPaper-root {
         width: 312px;

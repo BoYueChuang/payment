@@ -11,6 +11,7 @@ import PaymentSelect from "./PaymentSelect";
 import Receipt from "./Receipt";
 import Upload from "./Upload";
 import PayButton from "./PayButton";
+import CircularProgress from "@mui/material/CircularProgress";
 
 declare global {
     let TPDirect: any;
@@ -52,8 +53,10 @@ const CONFGive = () => {
     const [isGooglePayReady, setIsGooglePayReady] = useState(false);
     const [isSamsungPayReady, setIsSamsungPayReady] = useState(false);
     const [isPayError, setPayError] = useState(true);
+    const [loading, setLoading] = useState(false);
     const amount = getValues("amount");
     const paymentType = getValues("paymentType");
+
 
 
     // **初始化設定 **
@@ -258,6 +261,7 @@ const CONFGive = () => {
 
     // **傳送至後端 API**
     const postPay = (prime: string) => {
+        setLoading(true);
         fetch('https://repo-tappy.vercel.app/api/payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -273,11 +277,13 @@ const CONFGive = () => {
                 document.body.style.backgroundColor = "#F1D984";
                 document.querySelector(".wrapper")?.classList.add("successAndFailWrapper");
                 setGiveStatus("success");
+                setLoading(false);
             })
             .catch((error) => {
                 console.log("❌ 錯誤：", error);
                 document.querySelector(".wrapper")?.classList.add("successAndFailWrapper");
                 setGiveStatus("fail");
+                setLoading(false);
             });
     }
 
@@ -403,6 +409,12 @@ const CONFGive = () => {
                     message={message}
                     onClose={handleCloseAlert}
                     cancelText="關閉"></ConfDialog>
+
+                {loading && (
+                    <Box className="loading">
+                        <CircularProgress className="loading-icon" />
+                    </Box>
+                )}
             </div>
         </div>
     );
