@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button } from "@mui/material";
 import { TextField, InputAdornment, Box } from "@mui/material";
-import { Checkbox, FormControlLabel } from "@mui/material";
 import CreditCard from "./CreditCard";
 import ExchangeRate from "./ExchangeRate";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -10,6 +8,9 @@ import Header from "./Header";
 import GiveSucessOrFail from "./GiveSucessOrFail";
 import ConfDialog from "./ConfDialog";
 import PaymentSelect from "./PaymentSelect";
+import Receipt from "./Receipt";
+import Upload from "./Upload";
+import PayButton from "./PayButton";
 
 declare global {
     let TPDirect: any;
@@ -45,7 +46,6 @@ const CONFGive = () => {
     );
     const [alertOpen, setAlertOpen] = useState(false);
     const [titleHeight, setTitleHeight] = useState(536);
-    const [getPaymentType, setPaymentType] = useState("personal");
     const [message, setMessage] = useState("");
     const [giveStatus, setGiveStatus] = useState("form");
     const [isApplePayReady, setIsApplePayReady] = useState(false);
@@ -54,6 +54,7 @@ const CONFGive = () => {
     const [isPayError, setPayError] = useState(true);
     const amount = getValues("amount");
     const paymentType = getValues("paymentType");
+
 
     // **初始化設定 **
     useEffect(() => {
@@ -226,6 +227,23 @@ const CONFGive = () => {
 
     // **設置 信用卡**
     const setupCreditCard = () => {
+        // 檢查各個欄位的狀態
+        const tappayStatus = TPDirect.card.getTappayFieldsStatus();
+
+        if (tappayStatus.canGetPrime === false) {
+            // 無法取得 Prime，檢查各欄位的狀態碼
+            if (tappayStatus.status.number === 2) {
+                console.error('卡號輸入有誤');
+            }
+            if (tappayStatus.status.expiry === 2) {
+                console.error('有效日期輸入有誤');
+            }
+            if (tappayStatus.status.ccv === 2) {
+                console.error('CCV 輸入有誤');
+            }
+            return;
+        };
+
         TPDirect.card.getPrime((result: any) => {
             if (result.status !== 0) {
                 document.body.style.backgroundColor = "#C4D9D4";
@@ -363,151 +381,17 @@ const CONFGive = () => {
                                 </Box>
                                 <Box className="contact-information">
                                     <p className="contact-information-note">如要與教會十一奉獻數據整併，請填寫相同的聯絡資料</p>
-                                    <div className="receipt-name-block">
-                                        <FormControlLabel
-                                            className="checkbox-label-block"
-                                            {...register("receipt")}
-                                            control={
-                                                <Checkbox className="checkbox-custom" />
-                                            }
-                                            label={<div className="label-custom">
-                                                <p className="label-chinese">是否需開立年度奉獻收據？</p>
-                                                <p className="label-english">Do you need annual giving receipt？</p></div>}
-                                            labelPlacement="start"
-                                        />
-                                        {watch("receipt") && (
-                                            <>
-                                                <div>
-                                                    <Button onClick={() => setPaymentType("personal")}
-                                                        className={`personal-company-button ${getPaymentType === "personal" ? "clicked" : "not-clicked"}`}
-                                                    >個人</Button>
-                                                    <Button onClick={() => setPaymentType("company")} className={`personal-company-button ${getPaymentType === "company" ? "clicked" : "not-clicked"}`}>企業</Button>
-                                                </div>
-                                                {getPaymentType === "personal" && (
-                                                    <div>
-                                                        <p className="label-chinese">收據姓名</p>
-                                                        <p className="label-english">Receipt Name</p>
-                                                        <TextField
-                                                            id="outlined-required"
-                                                            className="receiptName width100 basic-formControl"
-                                                            {...register("receiptName", {
-                                                                // 當 getPaymentType === "personal" 時，才需要驗證
-
-                                                                required: getPaymentType === "personal" ? "姓名必填" : false,
-                                                            })}
-                                                            error={!!errors.receiptName}
-                                                            helperText={errors.receiptName?.message}
-                                                        />
-                                                        <p className="contact-information-note">如有報稅需求，請填寫與台灣身分證相符的姓名</p>
-                                                    </div>
-                                                )}
-                                            </>
-                                        )
-                                        }
-                                    </div>
-                                    {watch("receipt") && getPaymentType === "company" && (
-                                        <div className="company-tax-block">
-                                            <div>
-                                                <p className="label-chinese">企業登記全名</p>
-                                                <p className="label-english">Company's Registered Name</p>
-                                                <TextField
-                                                    id="outlined-required"
-                                                    className="receiptName width100 basic-formControl"
-                                                    {...register("company", {
-                                                        // 當 getPaymentType === "company" 時，才需要驗證
-                                                        required: getPaymentType === "company" ? "企業登記全名必填" : false,
-                                                    })}
-                                                    error={!!errors.company}
-                                                    helperText={errors.company?.message}
-                                                />
-                                            </div>
-                                            <div>
-                                                <p className="label-chinese">統一編號</p>
-                                                <p className="label-english">Tax ID Number</p>
-                                                <TextField
-                                                    id="outlined-required"
-                                                    className="nationalID width100 basic-formControl"
-                                                    {...register("taxid", {
-                                                        // 當 getPaymentType === "company" 時，才需要驗證
-                                                        required: getPaymentType === "company" ? "統一編號必填" : false,
-                                                    })}
-                                                    error={!!errors.taxid}
-                                                    helperText={errors.taxid?.message}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-                                    <FormControlLabel
-                                        className="checkbox-label-block"
-                                        control={
-                                            <Checkbox className="checkbox-custom"
-                                                {...register("upload")} />
-                                        }
-                                        label={<div className="label-custom">
-                                            <p className="label-chinese">是否上傳國稅局？(台灣報稅需要)</p>
-                                            <p className="label-english">Do you need to submit your taxes to Taiwan's IRS?</p></div>}
-                                        labelPlacement="start"
-                                    />
-                                    {watch("upload") && (
-                                        <div>
-                                            <p className="label-chinese">身分證字號</p>
-                                            <p className="label-english">National ID</p>
-                                            <TextField
-                                                id="outlined-required"
-                                                className="nationalID width100 basic-formControl"
-                                                {...register("nationalid", {
-                                                    // 當 upload === "true" 時，才需要驗證
-                                                    required: watch("upload") ? "身分證字號必填" : false,
-                                                })}
-                                                error={!!errors.nationalid}
-                                                helperText={errors.nationalid?.message}
-                                            />
-                                        </div>
-                                    )}
+                                    <Receipt receipt={watch("receipt")} register={register} errors={errors}></Receipt>
+                                    <Upload upload={watch("upload")} register={register} errors={errors}></Upload>
                                     <PaymentSelect register={register}></PaymentSelect>
-                                    <CreditCard paymentType={watch("paymentType")} register={register} errors={errors}></CreditCard>
-                                    {paymentType === "credit-card" && (
-                                        <Button
-                                            type="submit"
-                                            variant="contained"
-                                            className="continue-button width100">
-                                            CONTINUE
-                                        </Button>
-                                    )}
-                                    {paymentType === "apple-pay" && (
-                                        <>
-                                            {!isApplePayReady ? (
-                                                <button type="submit" className="fake-pay-button apple-pay-button"></button>
-                                            ) : (
-                                                isPayError && <div id="apple-pay-button-container"></div>
-                                            )}
-                                        </>
-
-                                    )}
-                                    {paymentType === "google-pay" && (
-                                        <>
-                                            {!isGooglePayReady && isPayError ? (
-                                                <button
-                                                    type="submit"
-                                                    className="fake-pay-button google-pay-button"
-                                                ></button>
-                                            ) : (
-                                                isPayError && <div id="google-pay-button-container"></div>
-                                            )}
-                                        </>
-                                    )}
-                                    {paymentType === "samsung-pay" && (
-                                        <>
-                                            {!isSamsungPayReady && isPayError ? (
-                                                <button
-                                                    type="submit"
-                                                    className="fake-pay-button samsung-pay-button"
-                                                ></button>
-                                            ) : (
-                                                isPayError && <div id="samsung-pay-button-container"></div>
-                                            )}
-                                        </>
-                                    )}
+                                    <CreditCard paymentType={watch("paymentType")}
+                                        register={register}
+                                        errors={errors}></CreditCard>
+                                    <PayButton paymentType={paymentType}
+                                        isApplePayReady={isApplePayReady}
+                                        isGooglePayReady={isGooglePayReady}
+                                        isSamsungPayReady={isSamsungPayReady}
+                                        isPayError={isPayError}></PayButton>
                                 </Box>
                             </Box>
                         </Box>
