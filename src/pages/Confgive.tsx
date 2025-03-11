@@ -157,7 +157,7 @@ const CONFGive = () => {
         if (button) {
             TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
                 console.log("Prime 取得成功：", getPrimeResult);
-                postPay(getPrimeResult.prime);
+                postPay(getPrimeResult.prime, getPrimeResult.card_info.last_four);
             });
         } else {
             setPayError(false);
@@ -178,13 +178,22 @@ const CONFGive = () => {
             if (result.canUseGooglePay) {
                 setPayError(true);
                 console.log("✅ 該裝置有支援的卡片可以付款");
+                console.log(result, 'result');
+
+                // 確保能獲取 card_info.last_four
+                const lastFour = result.card_info ? result.card_info.last_four : null;
+                if (!lastFour) {
+                    console.error("無法取得卡片的末四碼");
+                    return;
+                };
+
                 TPDirect.googlePay.setupGooglePayButton({
                     el: "#google-pay-button-container",
                     color: "black",
                     type: "long",
                     getPrimeCallback: function (prime: string) {
                         console.log("Prime 取得成功：", prime);
-                        postPay(prime);
+                        postPay(prime, lastFour);
                     }
                 })
             } else {
@@ -219,8 +228,8 @@ const CONFGive = () => {
             shape: 'rectangular'
         }, function (result: any) {
             if (result.status === 0) {
-                console.log("✅ 取得 Prime 成功:", result.prime);
-                postPay(result.prime);
+                console.log("✅ 取得成功:", result);
+                postPay(result.prime, result.card_info.last_four);
             } else {
                 console.error("❌ 取得 Prime 失敗:", result);
             }
@@ -236,14 +245,14 @@ const CONFGive = () => {
         if (tappayStatus.canGetPrime === false) {
             // 無法取得 Prime，檢查各欄位的狀態碼
             if (tappayStatus.status.number === 2) {
-                console.error('卡號輸入有誤');
-            }
+                handleOpenAlert("卡號輸入有誤");
+            };
             if (tappayStatus.status.expiry === 2) {
-                console.error('有效日期輸入有誤');
-            }
+                handleOpenAlert("有效日期輸入有誤");
+            };
             if (tappayStatus.status.ccv === 2) {
-                console.error('CCV 輸入有誤');
-            }
+                handleOpenAlert("CCV 輸入有誤");
+            };
             return;
         };
 
@@ -255,12 +264,13 @@ const CONFGive = () => {
                 return;
             };
             // 傳送至後端 API
-            postPay(result.card.prime);
+            console.log(result);
+            postPay(result.card.prime, result.card.lastfour);
         });
     }
 
     // **傳送至後端 API**
-    const postPay = (prime: string) => {
+    const postPay = (prime: string, last_four: string) => {
         setLoading(true);
         fetch('https://repo-tappy.vercel.app/api/payment', {
             method: 'POST',
@@ -268,7 +278,10 @@ const CONFGive = () => {
             body: JSON.stringify({
                 prime: prime,
                 amount: Number(amount),
-                cardholder: getValues(),
+                cardholder: {
+                    ...getValues(),
+                    last_four
+                }
             }),
         })
             .then((res) => res.json())
