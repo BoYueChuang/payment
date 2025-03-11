@@ -54,7 +54,7 @@ const CONFGive = () => {
     const [isSamsungPayReady, setIsSamsungPayReady] = useState(false);
     const [isPayError, setPayError] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [log, setlog] = useState({});
+    // const [log, setlog] = useState({});
     const amount = getValues("amount");
     const paymentType = getValues("paymentType");
 
@@ -176,7 +176,7 @@ const CONFGive = () => {
         }
 
         TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (result: any) {
-            setlog(result);
+            // setlog(result);
             // if (result.canUseGooglePay) {
             //     setPayError(true);
             //     console.log("✅ 該裝置有支援的卡片可以付款");
