@@ -156,8 +156,8 @@ const CONFGive = () => {
         const button = document.querySelector("#apple-pay-button-container");
         if (button) {
             TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
-                console.log("Prime 取得成功：", getPrimeResult);
-                postPay(getPrimeResult.prime, getPrimeResult.card_info.last_four);
+                // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
+                postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
             });
         } else {
             setPayError(false);
