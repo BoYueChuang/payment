@@ -54,6 +54,7 @@ const CONFGive = () => {
     const [isSamsungPayReady, setIsSamsungPayReady] = useState(false);
     const [isPayError, setPayError] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [log, setlog] = useState({});
     const amount = getValues("amount");
     const paymentType = getValues("paymentType");
 
@@ -175,32 +176,33 @@ const CONFGive = () => {
         }
 
         TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (result: any) {
-            if (result.canUseGooglePay) {
-                setPayError(true);
-                console.log("✅ 該裝置有支援的卡片可以付款");
-                console.log(result, 'result');
+            setlog(result);
+            // if (result.canUseGooglePay) {
+            //     setPayError(true);
+            //     console.log("✅ 該裝置有支援的卡片可以付款");
+            //     console.log(result, 'result');
 
-                // 確保能獲取 card_info.last_four
-                const lastFour = result.card_info ? result.card_info.last_four : null;
-                if (!lastFour) {
-                    console.error("無法取得卡片的末四碼");
-                    return;
-                };
-
-                TPDirect.googlePay.setupGooglePayButton({
-                    el: "#google-pay-button-container",
-                    color: "black",
-                    type: "long",
-                    getPrimeCallback: function (prime: string) {
-                        console.log("Prime 取得成功：", prime);
-                        postPay(prime, lastFour);
-                    }
-                })
-            } else {
-                setPayError(false);
-                handleOpenAlert("此裝置不支援 Google Pay");
+            // 確保能獲取 card_info.last_four
+            const lastFour = result.card_info ? result.card_info.last_four : null;
+            if (!lastFour) {
+                console.error("無法取得卡片的末四碼");
                 return;
             };
+
+            TPDirect.googlePay.setupGooglePayButton({
+                el: "#google-pay-button-container",
+                color: "black",
+                type: "long",
+                getPrimeCallback: function (prime: string) {
+                    console.log("Prime 取得成功：", prime);
+                    postPay(prime, lastFour);
+                }
+            })
+            // } else {
+            //     setPayError(false);
+            //     handleOpenAlert("此裝置不支援 Google Pay");
+            //     return;
+            // };
         });
     }
 
