@@ -502,6 +502,52 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     appearance: none !important;
 }
 
+#google-pay-button-container div {
+    min-height: 30px;
+    border: 1px solid black;
+    background-image: -webkit-named-image(google-pay-logo-white);
+    /* 設置 Google Pay logo */
+    background-size: contain;
+    /* 確保 logo 自動調整大小 */
+    background-repeat: no-repeat;
+    background-color: black;
+    background-position: center;
+    /* 居中顯示 logo */
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px auto;
+    transition: background-color .15s;
+    appearance: none !important;
+
+    /* 隱藏任何可能的文字 */
+    text-indent: -9999px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#samsung-pay-button-container div {
+    min-height: 30px;
+    border: 1px solid black;
+    background-image: -webkit-named-image(samsung-pay-logo-white);
+    /* 設置 Google Pay logo */
+    background-size: contain;
+    /* 確保 logo 自動調整大小 */
+    background-repeat: no-repeat;
+    background-color: black;
+    background-position: center;
+    /* 居中顯示 logo */
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px auto;
+    transition: background-color .15s;
+    appearance: none !important;
+
+    /* 隱藏任何可能的文字 */
+    text-indent: -9999px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .successAndFailWrapper {
     display: flex;
     align-items: center;
