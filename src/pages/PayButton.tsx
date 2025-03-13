@@ -5,11 +5,10 @@ interface PayButtonProps {
     isApplePayReady: boolean;
     isGooglePayReady: boolean;
     isSamsungPayReady: boolean;
-    isPayError: boolean;
 }
 
 const PayButton: React.FC<PayButtonProps> = (props) => {
-    const { paymentType, isApplePayReady, isGooglePayReady, isSamsungPayReady, isPayError } = props;
+    const { paymentType, isApplePayReady, isGooglePayReady, isSamsungPayReady } = props;
 
     return (
         <>
@@ -23,35 +22,35 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
             )}
             {paymentType === "apple-pay" && (
                 <>
-                    {!isApplePayReady ? (
-                        <button type="submit" className="fake-pay-button apple-pay-button"></button>
+                    {isApplePayReady ? (
+                        <div id="apple-pay-button-container"></div>
                     ) : (
-                        isPayError && <div id="apple-pay-button-container"></div>
+                        <button type="submit" className="fake-pay-button apple-pay-button"></button>
                     )}
                 </>
 
             )}
             {paymentType === "google-pay" && (
                 <>
-                    {!isGooglePayReady && isPayError ? (
+                    {isGooglePayReady ? (
+                        <div id="google-pay-button-container"></div>
+                    ) : (
                         <button
                             type="submit"
                             className="fake-pay-button google-pay-button"
                         ></button>
-                    ) : (
-                        isPayError && <div id="google-pay-button-container"></div>
                     )}
                 </>
             )}
             {paymentType === "samsung-pay" && (
                 <>
-                    {!isSamsungPayReady && isPayError ? (
+                    {isSamsungPayReady ? (
+                        <div id="samsung-pay-button-container"></div>
+                    ) : (
                         <button
                             type="submit"
                             className="fake-pay-button samsung-pay-button"
                         ></button>
-                    ) : (
-                        isPayError && <div id="samsung-pay-button-container"></div>
                     )}
                 </>
             )}

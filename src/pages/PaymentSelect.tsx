@@ -4,7 +4,6 @@ import { SiApplepay } from "react-icons/si";
 import { FaGooglePay } from "react-icons/fa6";
 import { SiSamsungpay } from "react-icons/si";
 import { CiCreditCard1 } from "react-icons/ci";
-import { useEffect, useState } from "react";
 
 interface PaymentSelectProps {
     register: UseFormRegister<any>;
@@ -13,39 +12,11 @@ interface PaymentSelectProps {
 
 const PaymentSelect: React.FC<PaymentSelectProps> = (props) => {
     const { register } = props;
-
-    const [paymentOptions, setPaymentOptions] = useState([
+    const paymentOptions = [
         { label: "Apple Pay", value: "apple-pay", icon: <SiApplepay size={24} /> },
         { label: "Google Pay", value: "google-pay", icon: <FaGooglePay size={24} /> },
         { label: "Samsung Pay", value: "samsung-pay", icon: <SiSamsungpay size={24} /> },
-    ]);
-
-    useEffect(() => {
-        const userAgent = navigator.userAgent;
-        const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
-        const isMac = /Macintosh|Mac OS X/.test(userAgent);
-        const isAndroid = /Android/.test(userAgent);
-        const isSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(userAgent);
-        console.log(isSafari, isIOS, isMac);
-
-        const isChrome = /Chrome/.test(userAgent) && !/Edge|OPR|SamsungBrowser/.test(userAgent); // 排除 Edge、Opera、Samsung
-        const isSamsungBrowser = /SamsungBrowser/.test(userAgent);
-
-        setPaymentOptions((options) =>
-            options.filter((option) => {
-                if (option.value === "apple-pay") {
-                    return (isIOS || isMac) && isSafari; // 只有 iOS + Safari 才顯示
-                }
-                if (option.value === "google-pay") {
-                    return isChrome || isAndroid; // 只有 Chrome 或 Android 才顯示
-                }
-                if (option.value === "samsung-pay") {
-                    return isSamsungBrowser; // 只有 Samsung Browser 才顯示
-                }
-                return true; // 預設保留其他選項
-            })
-        );
-    }, []);
+    ]
 
     return (
         <Select

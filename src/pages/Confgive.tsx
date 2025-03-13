@@ -52,9 +52,7 @@ const CONFGive = () => {
     const [isApplePayReady, setIsApplePayReady] = useState(false);
     const [isGooglePayReady, setIsGooglePayReady] = useState(false);
     const [isSamsungPayReady, setIsSamsungPayReady] = useState(false);
-    const [isPayError, setPayError] = useState(true);
     const [loading, setLoading] = useState(false);
-    // const [log, setlog] = useState({});
     const amount = getValues("amount");
     const paymentType = getValues("paymentType");
 
@@ -89,22 +87,15 @@ const CONFGive = () => {
         if (isValid) {
             switch (paymentType) {
                 case "apple-pay":
-                    setIsApplePayReady(true);
                     setupApplePay();
                     break;
                 case "google-pay":
-                    setIsGooglePayReady(true);
                     setupGooglePay();
                     break;
                 case "samsung-pay":
-                    setIsSamsungPayReady(true);
                     setupSamSungPay();
                     break;
             };
-        } else {
-            setIsApplePayReady(false);
-            setIsGooglePayReady(false);
-            setIsSamsungPayReady(false);
         };
         // eslint-disable-next-line
     }, [errors, isValid]);
@@ -122,6 +113,8 @@ const CONFGive = () => {
 
     // **設置 Apple Pay**
     const setupApplePay = async () => {
+        setIsApplePayReady(true);
+
         const paymentRequest = {
             supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             supportedMethods: ["apple_pay"],
@@ -140,18 +133,17 @@ const CONFGive = () => {
 
 
         if (!result.browserSupportPaymentRequest) {
-            setPayError(false);
+            setIsApplePayReady(false);
             handleOpenAlert("此裝置不支援 Apple Pay");
             return;
         };
 
         if (!result.canMakePaymentWithActiveCard) {
-            setPayError(false);
+            setIsApplePayReady(false);
             handleOpenAlert("此裝置沒有支援的卡片可以付款");
             return;
         };
 
-        setPayError(true);
         console.log("✅ 該裝置有支援的卡片可以付款");
 
         const button = document.querySelector("#apple-pay-button-container");
@@ -161,7 +153,7 @@ const CONFGive = () => {
                 postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
             });
         } else {
-            setPayError(false);
+            setIsApplePayReady(false);
             console.error("❌ Apple Pay 按鈕未正確插入 DOM");
         };
     };
@@ -169,25 +161,43 @@ const CONFGive = () => {
 
     // **設置 Google Pay**
     const setupGooglePay = async () => {
+
+        setIsGooglePayReady(true);
+
         const paymentRequest = {
             allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             price: amount, // optional
             currency: "TWD", // optional
-        }
+        };
 
         TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (result: any) {
-            // setlog(result);
-            // if (result.canUseGooglePay) {
-            //     setPayError(true);
-            //     console.log("✅ 該裝置有支援的卡片可以付款");
-            //     console.log(result, 'result');
+            console.log("Google Pay 支援狀態:", result);
 
-            // 確保能獲取 card_info.last_four
-            const lastFour = result.card_info ? result.card_info.last_four : null;
-            if (!lastFour) {
-                console.error("無法取得卡片的末四碼");
+
+            if (!result) {
+                console.error("❌ Google Pay 設定失敗，result 為 undefined");
                 return;
-            };
+            }
+
+            // 檢查裝置是否支援 Google Pay
+            if (!result.canUseGooglePay) {
+                setIsGooglePayReady(false);
+                handleOpenAlert("此裝置不支援 Google Pay");
+                return;
+            }
+
+            // 確保卡片資訊存在
+            if (!result.card_info || !result.card_info.last_four) {
+                console.error("❌ 無可用的 Google Pay 卡片");
+                setIsGooglePayReady(false);
+                handleOpenAlert("沒有可用的 Google Pay 卡片");
+                return;
+            }
+
+            console.log("✅ 該裝置有支援的卡片可以付款");
+
+            // 取得卡片的末四碼
+            const lastFour = result.card_info.last_four;
 
             TPDirect.googlePay.setupGooglePayButton({
                 el: "#google-pay-button-container",
@@ -197,18 +207,15 @@ const CONFGive = () => {
                     console.log("Prime 取得成功：", prime);
                     postPay(prime, lastFour);
                 }
-            })
-            // } else {
-            //     setPayError(false);
-            //     handleOpenAlert("此裝置不支援 Google Pay");
-            //     return;
-            // };
+            });
         });
+
     }
 
 
     // **設置 Samsung Pay**
     const setupSamSungPay = async () => {
+        setIsSamsungPayReady(true);
         const paymentRequest = {
             supportedNetworks: ['MASTERCARD', 'VISA'],
             total: {
@@ -221,7 +228,6 @@ const CONFGive = () => {
         }
         TPDirect.samsungPay.setupPaymentRequest(paymentRequest)
 
-        setPayError(true);
         console.log("✅ 該裝置有支援的卡片可以付款");
 
         TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
@@ -233,6 +239,8 @@ const CONFGive = () => {
                 console.log("✅ 取得成功:", result);
                 postPay(result.prime, result.card_info.last_four);
             } else {
+                setIsSamsungPayReady(false);
+                handleOpenAlert("此裝置不支援 Samsung Pay");
                 console.error("❌ 取得 Prime 失敗:", result);
             }
         });
@@ -411,8 +419,7 @@ const CONFGive = () => {
                                     <PayButton paymentType={paymentType}
                                         isApplePayReady={isApplePayReady}
                                         isGooglePayReady={isGooglePayReady}
-                                        isSamsungPayReady={isSamsungPayReady}
-                                        isPayError={isPayError}></PayButton>
+                                        isSamsungPayReady={isSamsungPayReady}></PayButton>
                                 </Box>
                             </Box>
                         </Box>
