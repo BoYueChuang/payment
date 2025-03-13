@@ -75,14 +75,7 @@ const CONFGive = () => {
             googleMerchantId: import.meta.env.VITE_GOOGLE_MERCHANT_ID,
             allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
             merchantName: "The Hope",
-            allowedCountryCodes: ['TW'],
-            tappayGoogleMerchantId: "Come from tappay portal",
-            emailRequired: true, // optional
-            shippingAddressRequired: true, // optional,
-            billingAddressRequired: true, // optional
-            billingAddressFormat: "MIN", // FULL, MIN
-            allowPrepaidCards: true,
-            phoneNumberRequired: true // optional
+            allowedCountryCodes: ['TW']
         });
 
         TPDirect.samsungPay.setup({
@@ -98,6 +91,8 @@ const CONFGive = () => {
                     setupApplePay();
                     break;
                 case "google-pay":
+                    console.log('dd');
+
                     setupGooglePay();
                     break;
                 case "samsung-pay":
@@ -106,7 +101,7 @@ const CONFGive = () => {
             };
         };
         // eslint-disable-next-line
-    }, [errors, isValid]);
+    }, [errors, isValid, watch('paymentType')]);
 
 
     // **提交**
@@ -181,26 +176,21 @@ const CONFGive = () => {
 
         TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (err: any, result: any) {
             console.log(err);
-            if (result.canUseGooglePay) {
-                setTimeout(() => {
-                    TPDirect.googlePay.setupGooglePayButton({
-                        el: "#google-pay-button-container",
-                        color: "black",
-                        type: "long"
-                    });
-
-                    TPDirect.googlePay.getPrime(function (err: any, prime: string) {
-                        if (err) {
-                            handleOpenAlert("此裝置不支援 Google Pay");
-                            return;
-                        };
-                        postPay(prime, result.card.lastfour);
-                    });
+            setTimeout(() => {
+                TPDirect.googlePay.setupGooglePayButton({
+                    el: "#google-pay-button-container",
+                    color: "black",
+                    type: "long"
                 });
-            } else {
-                setIsGooglePayReady(false);
-                handleOpenAlert("此裝置不支援 Google Pay");
-            };
+
+                TPDirect.googlePay.getPrime(function (err: any, prime: string) {
+                    if (err) {
+                        handleOpenAlert("此裝置不支援 Google Pay");
+                        return;
+                    };
+                    postPay(prime, result.card.lastfour);
+                });
+            });
         });
     }
 

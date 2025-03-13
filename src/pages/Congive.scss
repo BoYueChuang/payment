@@ -491,7 +491,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     min-height: 30px;
     border: 1px solid black;
     background-image: url('/images/apple-pay-icon.webp') !important;
-    background-size: 100% calc(50% + 2px);
+    background-size: contain;
     background-repeat: no-repeat;
     background-color: black;
     background-position: 50% 50%;
@@ -535,7 +535,6 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     background-position: center;
     /* 居中顯示 logo */
     border-radius: 5px;
-    padding: 10px;
     margin: 10px auto;
     transition: background-color .15s;
     appearance: none !important;
