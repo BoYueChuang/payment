@@ -148,9 +148,11 @@ const CONFGive = () => {
 
         const button = document.querySelector("#apple-pay-button-container");
         if (button) {
-            TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
-                // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
-                postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
+            setTimeout(() => {
+                TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
+                    // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
+                    postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
+                });
             });
         } else {
             setIsApplePayReady(false);
@@ -199,14 +201,16 @@ const CONFGive = () => {
             // 取得卡片的末四碼
             const lastFour = result.card_info.last_four;
 
-            TPDirect.googlePay.setupGooglePayButton({
-                el: "#google-pay-button-container",
-                color: "black",
-                type: "long",
-                getPrimeCallback: function (prime: string) {
-                    console.log("Prime 取得成功：", prime);
-                    postPay(prime, lastFour);
-                }
+            setTimeout(() => {
+                TPDirect.googlePay.setupGooglePayButton({
+                    el: "#google-pay-button-container",
+                    color: "black",
+                    type: "long",
+                    getPrimeCallback: function (prime: string) {
+                        console.log("Prime 取得成功：", prime);
+                        postPay(prime, lastFour);
+                    }
+                });
             });
         });
 
