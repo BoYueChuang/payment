@@ -76,7 +76,15 @@ const CONFGive = () => {
             allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
             merchantName: "The Hope",
             allowedCountryCodes: ['TW'],
+            tappayGoogleMerchantId: "Come from tappay portal",
+            emailRequired: true, // optional
+            shippingAddressRequired: true, // optional,
+            billingAddressRequired: true, // optional
+            billingAddressFormat: "MIN", // FULL, MIN
+            allowPrepaidCards: true,
+            phoneNumberRequired: true // optional
         });
+
         TPDirect.samsungPay.setup({
             country_code: 'tw'
         })
@@ -163,7 +171,6 @@ const CONFGive = () => {
 
     // **設置 Google Pay**
     const setupGooglePay = async () => {
-
         setIsGooglePayReady(true);
 
         const paymentRequest = {
@@ -172,48 +179,29 @@ const CONFGive = () => {
             currency: "TWD", // optional
         };
 
-        TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (result: any) {
-            console.log("Google Pay 支援狀態:", result);
+        TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (err: any, result: any) {
+            console.log(err);
+            if (result.canUseGooglePay) {
+                setTimeout(() => {
+                    TPDirect.googlePay.setupGooglePayButton({
+                        el: "#google-pay-button-container",
+                        color: "black",
+                        type: "long"
+                    });
 
-
-            if (!result) {
-                console.error("❌ Google Pay 設定失敗，result 為 undefined");
-                return;
-            }
-
-            // 檢查裝置是否支援 Google Pay
-            if (!result.canUseGooglePay) {
+                    TPDirect.googlePay.getPrime(function (err: any, prime: string) {
+                        if (err) {
+                            handleOpenAlert("此裝置不支援 Google Pay");
+                            return;
+                        };
+                        postPay(prime, result.card.lastfour);
+                    });
+                });
+            } else {
                 setIsGooglePayReady(false);
                 handleOpenAlert("此裝置不支援 Google Pay");
-                return;
-            }
-
-            // 確保卡片資訊存在
-            if (!result.card_info || !result.card_info.last_four) {
-                console.error("❌ 無可用的 Google Pay 卡片");
-                setIsGooglePayReady(false);
-                handleOpenAlert("沒有可用的 Google Pay 卡片");
-                return;
-            }
-
-            console.log("✅ 該裝置有支援的卡片可以付款");
-
-            // 取得卡片的末四碼
-            const lastFour = result.card_info.last_four;
-
-            setTimeout(() => {
-                TPDirect.googlePay.setupGooglePayButton({
-                    el: "#google-pay-button-container",
-                    color: "black",
-                    type: "long",
-                    getPrimeCallback: function (prime: string) {
-                        console.log("Prime 取得成功：", prime);
-                        postPay(prime, lastFour);
-                    }
-                });
-            });
+            };
         });
-
     }
 
 
@@ -229,26 +217,29 @@ const CONFGive = () => {
                     value: '1.00'
                 }
             }
-        }
+        };
+
         TPDirect.samsungPay.setupPaymentRequest(paymentRequest)
 
         console.log("✅ 該裝置有支援的卡片可以付款");
 
         setTimeout(() => {
             console.log("Samsung Pay 按鈕 DOM:", document.querySelector("#samsung-pay-button-container"));
+
             TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
                 color: 'black',
                 type: 'pay',
                 shape: 'rectangular'
-            }, function (result: any) {
-                if (result.status === 0) {
-                    console.log("✅ 取得成功:", result);
-                    postPay(result.prime, result.card_info.last_four);
-                } else {
-                    setIsSamsungPayReady(false);
+            });
+
+            TPDirect.samsungPay.getPrime(function (result: any) {
+                if (result.status !== 0) {
                     handleOpenAlert("此裝置不支援 Samsung Pay");
-                    console.error("❌ 取得 Prime 失敗:", result);
-                }
+                    return;
+                };
+
+                console.log("✅ 取得成功:", result);
+                postPay(result.prime, result.card.lastfour);
             });
         });
     }

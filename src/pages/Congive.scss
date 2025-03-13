@@ -490,7 +490,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 #apple-pay-button-container div {
     min-height: 30px;
     border: 1px solid black;
-    background-image: -webkit-named-image(apple-pay-logo-white);
+    background-image: url('/images/apple-pay-icon.webp') !important;
     background-size: 100% calc(50% + 2px);
     background-repeat: no-repeat;
     background-color: black;
@@ -505,8 +505,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 #google-pay-button-container div {
     min-height: 30px;
     border: 1px solid black;
-    background-image: -webkit-named-image(google-pay-logo-white);
-    /* 設置 Google Pay logo */
+    background-image: url('/images/google-pay-icon.webp') !important;
     background-size: contain;
     /* 確保 logo 自動調整大小 */
     background-repeat: no-repeat;
@@ -514,11 +513,9 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     background-position: center;
     /* 居中顯示 logo */
     border-radius: 5px;
-    padding: 10px;
     margin: 10px auto;
     transition: background-color .15s;
     appearance: none !important;
-
     /* 隱藏任何可能的文字 */
     text-indent: -9999px;
     overflow: hidden;
