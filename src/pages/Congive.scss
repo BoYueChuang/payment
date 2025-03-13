@@ -526,9 +526,10 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 }
 
 #samsung-pay-button-container div {
+    background-origin: padding-box !important;
     min-height: 30px;
     border: 1px solid black;
-    background-image: -webkit-named-image(samsung-pay-logo-white);
+    background-image: url('/images/samsung-pay-icon.webp') !important;
     /* 設置 Google Pay logo */
     background-size: contain;
     /* 確保 logo 自動調整大小 */

@@ -230,19 +230,22 @@ const CONFGive = () => {
 
         console.log("✅ 該裝置有支援的卡片可以付款");
 
-        TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
-            color: 'black',
-            type: 'pay',
-            shape: 'rectangular'
-        }, function (result: any) {
-            if (result.status === 0) {
-                console.log("✅ 取得成功:", result);
-                postPay(result.prime, result.card_info.last_four);
-            } else {
-                setIsSamsungPayReady(false);
-                handleOpenAlert("此裝置不支援 Samsung Pay");
-                console.error("❌ 取得 Prime 失敗:", result);
-            }
+        setTimeout(() => {
+            console.log("Samsung Pay 按鈕 DOM:", document.querySelector("#samsung-pay-button-container"));
+            TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
+                color: 'black',
+                type: 'pay',
+                shape: 'rectangular'
+            }, function (result: any) {
+                if (result.status === 0) {
+                    console.log("✅ 取得成功:", result);
+                    postPay(result.prime, result.card_info.last_four);
+                } else {
+                    setIsSamsungPayReady(false);
+                    handleOpenAlert("此裝置不支援 Samsung Pay");
+                    console.error("❌ 取得 Prime 失敗:", result);
+                }
+            });
         });
     }
 
