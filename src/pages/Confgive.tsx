@@ -404,7 +404,7 @@ const CONFGive = () => {
                                     <CreditCard paymentType={watch("paymentType")}
                                         register={register}
                                         errors={errors}></CreditCard>
-                                    <p>1111111</p>
+                                    <p>222</p>
                                     <PayButton paymentType={paymentType}
                                         isApplePayReady={isApplePayReady}
                                         isGooglePayReady={isGooglePayReady}
