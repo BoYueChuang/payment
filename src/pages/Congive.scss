@@ -28,6 +28,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     transition: background 0.3s ease-in-out;
     z-index: 100; // **確保它高於其他內容**
 
+    // **根據螢幕大小切換背景圖片**
     @media #{$pc},
     #{$tablet} {
         background-image: url('/images/pc-banner-middle-size.webp');
