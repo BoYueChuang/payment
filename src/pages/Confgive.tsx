@@ -60,6 +60,10 @@ const CONFGive = () => {
 
     // **初始化設定 **
     useEffect(() => {
+        console.log(import.meta);
+
+        console.log(import.meta.env);
+
         console.log(import.meta.env.VITE_TAPPAY_APP_KEY, "TAPPAY_APP_ID");
         console.log(import.meta.env.VITE_TAPPAY_APP_ID, "TAPPAY_APP_KEY");
         console.log(import.meta.env.VITE_APPLE_MERCHANT_ID, "APPLE_MERCHANT_ID");
