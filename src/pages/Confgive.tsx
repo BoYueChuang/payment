@@ -170,7 +170,7 @@ const CONFGive = () => {
 
         const paymentRequest = {
             allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
-            price: amount, // optional
+            price: amount.toString(), // optional
             currency: "TWD", // optional
         };
 
@@ -204,7 +204,7 @@ const CONFGive = () => {
                 label: 'The Hope',
                 amount: {
                     currency: 'TWD',
-                    value: '1.00'
+                    value: amount.toString()
                 }
             }
         };
