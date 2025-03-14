@@ -19,8 +19,10 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: 🚀 Install pnpm
-        run: npm install -g pnpm
+      - name: 🚀 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8 # 指定 pnpm 版本，確保相容
 
       - name: 📦 Install Dependencies
         run: pnpm install --frozen-lockfile
