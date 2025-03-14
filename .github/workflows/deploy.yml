@@ -1,36 +1,33 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare
 
 on:
   push:
     branches:
-      - master 
+      - master
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: 🏗️ Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: '20'
 
-      - name: 🚀 Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8 # 指定 pnpm 版本，確保相容
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install
 
-      - name: 🔨 Build Project
+      - name: Build project with Vite
         run: pnpm run build
 
-      - name: 🚀 Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
