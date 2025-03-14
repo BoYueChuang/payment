@@ -6,13 +6,16 @@ export default defineConfig({
   base: "/",
   plugins: [
     react(),
-    EnvironmentPlugin(['VITE_TAPPAY_APP_KEY', 'VITE_TAPPAY_APP_ID', 'VITE_APPLE_MERCHANT_ID', 'VITE_GOOGLE_MERCHANT_ID'])],
-  define: {
-    'process.env.VITE_TAPPAY_APP_KEY': JSON.stringify(process.env.VITE_TAPPAY_APP_KEY),
-    'process.env.VITE_TAPPAY_APP_ID': JSON.stringify(process.env.VITE_TAPPAY_APP_ID),
-    'process.env.VITE_APPLE_MERCHANT_ID': JSON.stringify(process.env.VITE_APPLE_MERCHANT_ID),
-    'process.env.VITE_GOOGLE_MERCHANT_ID': JSON.stringify(process.env.VITE_GOOGLE_MERCHANT_ID),
-  },
+    EnvironmentPlugin(
+      {
+        VITE_TAPPAY_APP_KEY: '',
+        VITE_TAPPAY_APP_ID: '',
+        VITE_APPLE_MERCHANT_ID: '',
+        VITE_GOOGLE_MERCHANT_ID: '',
+      },
+      { defineOn: 'import.meta.env' }
+    ),
+  ],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
