@@ -4,6 +4,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: "/",
   plugins: [react()],
+  define: {
+    'process.env.VITE_TAPPAY_APP_KEY': JSON.stringify(process.env.VITE_TAPPAY_APP_KEY),
+    'process.env.VITE_TAPPAY_APP_ID': JSON.stringify(process.env.VITE_TAPPAY_APP_ID),
+    'process.env.VITE_APPLE_MERCHANT_ID': JSON.stringify(process.env.VITE_APPLE_MERCHANT_ID),
+    'process.env.VITE_GOOGLE_MERCHANT_ID': JSON.stringify(process.env.VITE_GOOGLE_MERCHANT_ID),
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
