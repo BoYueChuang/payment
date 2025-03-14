@@ -164,26 +164,29 @@ const CONFGive = () => {
     };
 
 
-    // **設置 Google Pay**
     const setupGooglePay = async () => {
         setIsGooglePayReady(true);
 
         const paymentRequest = {
             allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
-            price: amount.toString(), // optional
-            currency: "TWD", // optional
+            price: amount.toString(),
+            currency: "TWD",
         };
 
-        TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (err: any, result: any) {
-            console.log(err);
-            setTimeout(() => {
+        try {
+            TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (err: any, result: any) {
+                if (err) {
+                    console.error('Error setting up payment request:', err);
+                    return;
+                };
+
                 TPDirect.googlePay.setupGooglePayButton({
                     el: "#google-pay-button-container",
                     color: "black",
                     type: "long"
                 });
 
-                TPDirect.googlePay.getPrime(function (err: any, prime: string) {
+                TPDirect.googlePay.getPrime(function (err: any, prime: any) {
                     if (err) {
                         handleOpenAlert("此裝置不支援 Google Pay");
                         return;
@@ -191,8 +194,11 @@ const CONFGive = () => {
                     postPay(prime, result.card.lastfour);
                 });
             });
-        });
+        } catch (error) {
+            console.error('An error occurred during Google Pay setup:', error);
+        };
     }
+
 
 
     // **設置 Samsung Pay**
