@@ -1,9 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import EnvironmentPlugin from 'vite-plugin-environment'
 
 export default defineConfig({
   base: "/",
-  plugins: [react()],
+  plugins: [
+    react(),
+    EnvironmentPlugin(['VITE_TAPPAY_APP_KEY', 'VITE_TAPPAY_APP_ID', 'VITE_APPLE_MERCHANT_ID', 'VITE_GOOGLE_MERCHANT_ID'])],
   define: {
     'process.env.VITE_TAPPAY_APP_KEY': JSON.stringify(process.env.VITE_TAPPAY_APP_KEY),
     'process.env.VITE_TAPPAY_APP_ID': JSON.stringify(process.env.VITE_TAPPAY_APP_ID),
