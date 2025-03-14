@@ -60,10 +60,10 @@ const CONFGive = () => {
 
     // **初始化設定 **
     useEffect(() => {
-        console.log(import.meta.env.TAPPAY_APP_ID, "TAPPAY_APP_ID");
-        console.log(import.meta.env.TAPPAY_APP_KEY, "TAPPAY_APP_KEY");
-        console.log(import.meta.env.APPLE_MERCHANT_ID, "APPLE_MERCHANT_ID");
-        console.log(import.meta.env.GOOGLE_MERCHANT_ID, "GOOGLE_MERCHANT_ID");
+        console.log(import.meta.env.VITE_TAPPAY_APP_KEY, "TAPPAY_APP_ID");
+        console.log(import.meta.env.VITE_TAPPAY_APP_ID, "TAPPAY_APP_KEY");
+        console.log(import.meta.env.VITE_APPLE_MERCHANT_ID, "APPLE_MERCHANT_ID");
+        console.log(import.meta.env.VITE_GOOGLE_MERCHANT_ID, "GOOGLE_MERCHANT_ID");
 
 
         console.log("TapPay SDK 加載完成");
