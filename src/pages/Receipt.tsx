@@ -1,16 +1,16 @@
 import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
-import { useState } from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 interface ReceiptProps {
+    setReceiptType: React.Dispatch<React.SetStateAction<string>>;
+    receiptType: string;
     receipt: boolean;
     register: UseFormRegister<any>;
     errors: FieldErrors<any>;
 }
 
 const Receipt: React.FC<ReceiptProps> = (props) => {
-    const { receipt, register, errors } = props;
-    const [getPaymentType, setPaymentType] = useState("personal");
+    const { receipt, register, errors, setReceiptType, receiptType } = props;
 
     return (
         <>
@@ -22,19 +22,19 @@ const Receipt: React.FC<ReceiptProps> = (props) => {
                         <Checkbox className="checkbox-custom" />
                     }
                     label={<div className="label-custom">
-                        <p className="label-chinese">是否需開立年度奉獻收據？</p>
-                        <p className="label-english">Do you need annual giving receipt？</p></div>}
-                    labelPlacement="start"
+                        <p className="label-chinese">需開立年度奉獻收據？</p>
+                        <p className="label-english">Annual giving receipt needed</p></div>}
+                    labelPlacement="end"
                 />
                 {receipt && (
                     <>
                         <div>
-                            <Button onClick={() => setPaymentType("personal")}
-                                className={`personal-company-button ${getPaymentType === "personal" ? "clicked" : "not-clicked"}`}
+                            <Button onClick={() => setReceiptType('personal')}
+                                className={`personal-company-button ${receiptType === "personal" ? "clicked" : "not-clicked"}`}
                             >個人</Button>
-                            <Button onClick={() => setPaymentType("company")} className={`personal-company-button ${getPaymentType === "company" ? "clicked" : "not-clicked"}`}>企業</Button>
+                            <Button onClick={() => setReceiptType('company')} className={`personal-company-button ${receiptType === "company" ? "clicked" : "not-clicked"}`}>企業</Button>
                         </div>
-                        {getPaymentType === "personal" && (
+                        {receiptType === "personal" && (
                             <div>
                                 <p className="label-chinese">收據姓名</p>
                                 <p className="label-english">Receipt Name</p>
@@ -42,9 +42,7 @@ const Receipt: React.FC<ReceiptProps> = (props) => {
                                     id="outlined-required"
                                     className="receiptName width100 basic-formControl"
                                     {...register("receiptName", {
-                                        // 當 getPaymentType === "personal" 時，才需要驗證
-
-                                        required: getPaymentType === "personal" ? "姓名必填" : false,
+                                        required: receiptType === "personal" ? "Required" : false,
                                     })}
                                     error={!!errors.receiptName}
                                     helperText={typeof errors.receiptName?.message === 'string' ? errors.receiptName?.message : undefined}
@@ -57,7 +55,7 @@ const Receipt: React.FC<ReceiptProps> = (props) => {
                 }
             </div>
             {
-                receipt && getPaymentType === "company" && (
+                receipt && receiptType === "company" && (
                     <div className="company-tax-block">
                         <div>
                             <p className="label-chinese">企業登記全名</p>
@@ -67,7 +65,7 @@ const Receipt: React.FC<ReceiptProps> = (props) => {
                                 className="receiptName width100 basic-formControl"
                                 {...register("company", {
                                     // 當 getPaymentType === "company" 時，才需要驗證
-                                    required: getPaymentType === "company" ? "企業登記全名必填" : false,
+                                    required: receiptType === "company" ? "Required" : false,
                                 })}
                                 error={!!errors.company}
                                 helperText={typeof errors.company?.message === 'string' ? errors.company?.message : undefined}
@@ -78,10 +76,10 @@ const Receipt: React.FC<ReceiptProps> = (props) => {
                             <p className="label-english">Tax ID Number</p>
                             <TextField
                                 id="outlined-required"
-                                className="nationalID width100 basic-formControl"
+                                className="m-t-8 width100 basic-formControl"
                                 {...register("taxid", {
                                     // 當 getPaymentType === "company" 時，才需要驗證
-                                    required: getPaymentType === "company" ? "統一編號必填" : false,
+                                    required: receiptType === "company" ? "Required" : false,
                                 })}
                                 error={!!errors.taxid}
                                 helperText={typeof errors.taxid?.message === 'string' ? errors.taxid?.message : undefined}

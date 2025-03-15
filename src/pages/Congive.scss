@@ -8,6 +8,11 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 }
 
 @font-face {
+    font-family: 'Gotham-Thin';
+    src: url('/fonts/Gotham-Thin.woff2') format('woff2')
+}
+
+@font-face {
     font-family: 'Ade';
     src: url('/fonts/Ade-Display.woff2') format('woff2')
 }
@@ -111,6 +116,13 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                     color: #070707;
                     font-size: 16px;
                     background-color: white;
+
+                    &.Mui-error {
+                        fieldset {
+                            border: 1px solid #E46962 !important; // 設定錯誤時的邊框顏色
+                        }
+                    }
+
                 }
 
                 .MuiSelect-select {
@@ -119,7 +131,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 }
 
                 .MuiFormHelperText-root {
-                    color: #E07A76;
+                    color: #E46962;
                     margin-left: 0;
                 }
 
@@ -145,7 +157,26 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                     font-size: 24px;
 
                     .MuiTypography-root {
+                        font-family: 'Gotham-Thin';
                         font-size: 24px;
+                        font-style: normal;
+                        font-weight: 700;
+                        line-height: normal;
+                        letter-spacing: 0.5px;
+                    }
+
+                    .MuiInputBase-input {
+                        color: rgba(0, 0, 0, 0.70);
+                        font-family: "Gotham-Black";
+                        font-size: 48px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: normal;
+                        letter-spacing: 0.5px;
+                    }
+
+                    .MuiOutlinedInput-input:focus {
+                        color: #FFA01F;
                     }
                 }
 
@@ -222,7 +253,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                     margin-left: 0;
                     margin-right: 0;
                     display: flex;
-                    justify-content: space-between;
+                    gap: 8px;
                 }
 
                 .checkbox-custom {
@@ -298,10 +329,6 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                     margin: 8px 0;
                 }
 
-                .nationalID {
-                    margin-top: 8px;
-                }
-
                 .payment-method-icon-text {
                     display: flex;
                     align-items: center;
@@ -315,6 +342,15 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                     border-radius: 8px;
                     background: rgba(40, 40, 41, 0.10);
                     padding: 16px;
+
+                    .valid-text {
+                        color: #E46962;
+                        font-family: "Roboto";
+                        font-size: 12px;
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: 16px;
+                    }
 
 
                     .tpfield {
@@ -367,7 +403,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 
         .success-title-english {
             color: #070707;
-            font-family: "Gotham Black";
+            font-family: "Gotham-Black";
             font-size: 20px;
             font-style: normal;
             font-weight: 500;
@@ -384,6 +420,12 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
             font-weight: 400;
             line-height: normal;
             letter-spacing: 0.5px;
+            margin-bottom: 8px;
+
+            a {
+                text-decoration: underline;
+                text-decoration-color: rgba(40, 40, 41, 0.80);
+            }
         }
 
         .note-english {
@@ -395,6 +437,11 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
             font-weight: 400;
             line-height: normal;
             letter-spacing: 0.5px;
+
+            a {
+                text-decoration: underline;
+                text-decoration-color: rgba(40, 40, 41, 0.80);
+            }
         }
     }
 
@@ -551,4 +598,8 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     align-items: center;
     height: 100vh;
     margin-top: 0px !important;
+}
+
+.m-t-8 {
+    margin-top: 8px !important;
 }

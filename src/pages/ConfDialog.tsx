@@ -4,6 +4,7 @@ interface AlertDialogProps {
     open: boolean;
     title?: string;
     message: string;
+    enMessage: string;
     onClose: () => void;
     onConfirm?: () => void;
     confirmText?: string;
@@ -12,16 +13,17 @@ interface AlertDialogProps {
 
 const ConfDialog: React.FC<AlertDialogProps> = ({
     open,
-    title = "錯誤",
+    title = "錯誤 Error",
     message,
     onClose,
-    cancelText = "關閉",
+    enMessage,
+    cancelText = "CLOSE",
 }) => {
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle className="dialog-title">{title}</DialogTitle>
             <DialogContent>
-                <DialogContentText className="dialog-message">{message}</DialogContentText>
+                <DialogContentText className="dialog-message">{message}<br></br>{enMessage}</DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} className="dialog-button">
