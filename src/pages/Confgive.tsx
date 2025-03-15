@@ -340,6 +340,7 @@ const CONFGive = () => {
             .then((res) => res.json())
             .then(() => {
                 console.log("✅ 付款成功");
+                document.body.style.overflow = "hidden";
                 document.body.style.backgroundColor = "#F1D984";
                 document.querySelector(".wrapper")?.classList.add("successAndFailWrapper");
                 setGiveStatus("success");
@@ -347,6 +348,7 @@ const CONFGive = () => {
             })
             .catch((error) => {
                 console.log("❌ 錯誤：", error);
+                document.body.style.overflow = "hidden";
                 document.querySelector(".wrapper")?.classList.add("successAndFailWrapper");
                 setGiveStatus("fail");
                 setLoading(false);
