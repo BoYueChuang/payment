@@ -75,11 +75,6 @@ const CONFGive = () => {
 
     // **初始化設定 **
     useEffect(() => {
-        console.log(import.meta.env.VITE_TAPPAY_APP_ID);
-        console.log(import.meta.env.VITE_TAPPAY_APP_KEY);
-        console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
-        console.log(import.meta.env.VITE_GOOGLE_MERCHANT_ID);
-
         console.log("TapPay SDK 加載完成");
         TPDirect.setupSDK(
             Number(import.meta.env.VITE_TAPPAY_APP_ID),
