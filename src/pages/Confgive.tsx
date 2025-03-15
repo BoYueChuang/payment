@@ -242,7 +242,7 @@ const CONFGive = () => {
                 };
                 postPay(prime, lastfour);
             });
-        });
+        }, 200);
     }
 
 
