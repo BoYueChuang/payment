@@ -176,18 +176,27 @@ const CONFGive = () => {
 
     // **設置 Apple Pay**
     const setupApplePay = async () => {
+
         setIsApplePayReady(true);
+
+        const button = document.querySelector("#apple-pay-button-container");
+        if (button) {
+            button.innerHTML = "";
+        };
+
         let paymentRequest = {
             supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             supportedMethods: ["apple_pay"],
-            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: (Number(getValues("amount")) || 0).toFixed(2) } }],
-            total: { label: "付給 TapPay", amount: { currency: "TWD", value: (Number(getValues("amount")) || 0).toFixed(2) } },
+            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: getValues("amount") } }],
+            total: { label: "付給 TapPay", amount: { currency: "TWD", value: getValues("amount") } },
         };
 
         const result: {
             browserSupportPaymentRequest: boolean,
             canMakePaymentWithActiveCard: boolean
         } = await new Promise((resolve) => {
+            console.log('sss');
+
             TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, resolve);
         });
 
@@ -208,17 +217,11 @@ const CONFGive = () => {
 
         console.log("✅ 該裝置有支援的卡片可以付款");
         setTimeout(() => {
-            const button = document.querySelector("#apple-pay-button-container");
-            if (button) {
-                button.innerHTML = "";
-                TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
-                    // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
-                    postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
-                });
-            } else {
-                setIsApplePayReady(false);
-                console.error("❌ Apple Pay 按鈕未正確插入 DOM");
-            };
+            console.log('23123');
+            TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
+                // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
+                postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
+            });
         }, 200);
     };
 
