@@ -177,15 +177,11 @@ const CONFGive = () => {
     // **設置 Apple Pay**
     const setupApplePay = async () => {
         setIsApplePayReady(true);
-        console.log(getValues("amount").toString());
-
-        const amount = getValues("amount").toString(); // 直接獲取最新值
-
         let paymentRequest = {
             supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             supportedMethods: ["apple_pay"],
-            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: amount.toString() } }],
-            total: { label: "付給 TapPay", amount: { currency: "TWD", value: amount.toString() } },
+            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: getValues("amount") } }],
+            total: { label: "付給 TapPay", amount: { currency: "TWD", value: getValues("amount") } },
         };
 
         const result: {
@@ -234,7 +230,7 @@ const CONFGive = () => {
 
         const paymentRequest = {
             allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
-            price: getValues("amount").toString(), // 直接獲取最新值,
+            price: getValues("amount"), // 直接獲取最新值,
             currency: "TWD",
         };
 
@@ -287,7 +283,7 @@ const CONFGive = () => {
                 label: 'The Hope',
                 amount: {
                     currency: 'TWD',
-                    value: getValues("amount").toString() // 直接獲取最新值
+                    value: getValues("amount") // 直接獲取最新值
                 }
             }
         };
