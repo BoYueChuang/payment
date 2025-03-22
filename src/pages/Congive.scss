@@ -433,7 +433,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
         @media #{$mobile} {
             width: 100%;
             max-width: 390px;
-            padding-top: 70px !important;
+            padding-top: 120px !important;
         }
 
         .success-title {
