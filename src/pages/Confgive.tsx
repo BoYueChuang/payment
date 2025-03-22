@@ -500,10 +500,10 @@ const CONFGive = () => {
                                             input: {
                                                 readOnly: false,
                                                 startAdornment: <InputAdornment position="start">+</InputAdornment>,
+                                                autoComplete: "off",
                                             },
                                         }}
                                         type="tel"
-                                        autoComplete="off"
                                         error={!!errors.phoneCode}
                                         helperText={errors.phoneCode?.message}
                                         className="phone-code basic-formControl"
