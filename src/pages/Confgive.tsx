@@ -149,10 +149,6 @@ const CONFGive = () => {
         if (isValid) {
             switch (watch('paymentType')) {
                 case "apple-pay":
-                    const button = document.querySelector("#apple-pay-button-container");
-                    if (button) {
-                        button.innerHTML = "";
-                    };
                     setupApplePay();
                     break;
                 case "google-pay":
@@ -214,10 +210,16 @@ const CONFGive = () => {
 
         console.log("✅ 該裝置有支援的卡片可以付款");
         setTimeout(() => {
-            TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
-                // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
-                postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
-            });
+            const button = document.querySelector("#google-pay-button-container");
+            console.log(button);
+
+            if (button) {
+                button.innerHTML = "";
+                TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
+                    // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
+                    postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
+                });
+            };
         });
     };
 
@@ -247,7 +249,6 @@ const CONFGive = () => {
         setTimeout(() => {
             const button = document.querySelector("#google-pay-button-container");
             console.log(button);
-
 
             if (button) {
                 button.innerHTML = "";
