@@ -220,7 +220,7 @@ const CONFGive = () => {
                     postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
                 });
             };
-        });
+        }, 100);
     };
 
 
