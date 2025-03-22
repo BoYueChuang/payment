@@ -130,11 +130,6 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                     background-color: white;
                 }
 
-                .MuiFormHelperText-root {
-                    color: #E46962;
-                    margin-left: 0;
-                }
-
                 .MuiOutlinedInput-notchedOutline {
                     border: none;
                 }
@@ -187,6 +182,8 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
             }
 
             .exchange-rate {
+                display: flex;
+                flex-direction: row;
                 font-family: 'Roboto';
                 font-size: 14px;
                 font-weight: 400;
@@ -201,6 +198,10 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 @media #{$mobile},
                 #{$tablet} {
                     width: 200px;
+                }
+
+                .disclaimer {
+                    text-decoration: underline
                 }
             }
 
@@ -242,7 +243,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                 .contact-information-note {
                     color: rgba(40, 40, 41, 0.80);
                     font-family: 'Roboto';
-                    font-size: 13px;
+                    font-size: 12px;
                     font-style: normal;
                     font-weight: 400;
                     line-height: 20px;
@@ -367,6 +368,49 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
                         gap: 24px;
                     }
                 }
+
+                .note-block {
+                    cursor: pointer;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+
+                    .add-icon {
+                        width: 18px;
+                        height: 18px;
+                    }
+
+                    .edit-icon {
+                        width: 18px;
+                        height: 18px;
+                    }
+
+                    .add-note-label {
+                        font-size: 'Roboto';
+                        color: rgba(0, 0, 0, 0.70);
+                        font-size: 14px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: 20px;
+                        /* 142.857% */
+                    }
+
+                    .edit-note-label {
+                        color: rgba(0, 0, 0, 0.70);
+                        text-align: center;
+                        font-family: 'Roboto';
+                        font-size: 14px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: 20px;
+                        letter-spacing: 0.1px;
+                        max-width: 200px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
             }
         }
     }
@@ -473,6 +517,11 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
     .samsung-pay-button {
         background-image: url('/images/samsung-pay-icon.webp');
     }
+
+    .note {
+        border-radius: 12px;
+        border: 1px solid rgba(40, 40, 41, 0.10);
+    }
 }
 
 .loading {
@@ -500,6 +549,7 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 .MuiDialog-container {
     .MuiPaper-root {
         width: 312px;
+        border-radius: 15px;
     }
 
     .dialog-title {
@@ -508,7 +558,6 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
         font-size: 24px;
         font-style: normal;
         font-weight: 400;
-        line-height: 32px;
     }
 
     .MuiDialogContent-root {
@@ -529,6 +578,52 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
         font-size: 14px;
         font-weight: 500;
     }
+}
+
+.note {
+
+    .MuiOutlinedInput-notchedOutline {
+        border: 1px solid rgba(40, 40, 41, 0.10);
+        color: #070707;
+        font-family: 'Noto Sans TC';
+    }
+
+    // hover 時
+    .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+        border: 1px solid rgba(40, 40, 41, 0.10);
+    }
+
+    // focus 時
+    .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+        border: 1px solid rgba(40, 40, 41, 0.10);
+    }
+
+    // error 時
+    .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+        border: 1px solid #E46962;
+    }
+}
+
+.MuiFormControl-root {
+    .MuiFormHelperText-root {
+        color: #E46962 !important;
+        margin-left: 0;
+        font-family: 'Roboto';
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 16px;
+        margin-top: 6px;
+    }
+}
+
+.note-alert {
+    font-family: 'Roboto';
+    font-size: 14px !important;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    margin-top: 6px;
 }
 
 .width100 {
@@ -596,10 +691,14 @@ $mobile: "(max-width: 599px)"; // 小於 600px 都視為 mobile
 .successAndFailWrapper {
     display: flex;
     align-items: center;
-    height: 100vh;
+    height: calc(100vh + 124px);
     margin-top: 0px !important;
 }
 
 .m-t-8 {
     margin-top: 8px !important;
+}
+
+.m-r-3 {
+    margin-right: 3px;
 }

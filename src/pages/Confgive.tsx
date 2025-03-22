@@ -6,48 +6,34 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import "./Congive.scss";
 import Header from "./Header";
 import GiveSucessOrFail from "./GiveSucessOrFail";
-import ConfDialog from "./ConfDialog";
+import ConfAlertDialog from "./ConfAlertDialog";
 import PaymentSelect from "./PaymentSelect";
 import Receipt from "./Receipt";
 import Upload from "./Upload";
 import PayButton from "./PayButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import ConfNoteDialog from "./ConfNoteDialog";
+import ConfGiveProps from "../interface/confGiveProps.model";
 
 declare global {
     let TPDirect: any;
 }
 
-interface confGiveProps {
-    amount: number;
-    email: string;
-    phone_number: string;
-    receipt: boolean;
-    paymentType: string;
-    name: string;
-    upload: boolean;
-    phoneCode: string;
-    receiptName: string;
-    nationalid: string;
-    company: string;
-    taxid: string;
-    note: string;
-}
 
 const CONFGive = () => {
-    const { register, handleSubmit, getValues, watch, formState: { errors, isValid } } = useForm<confGiveProps>(
+    const { register, handleSubmit, getValues, watch, setValue, clearErrors, formState: { errors, isValid } } = useForm<ConfGiveProps>(
         {
             mode: "onChange", // 這裡設定為 onChange
             defaultValues: {
-                amount: 0,
-                email: '',
-                phone_number: '',
+                amount: 1000,
                 receipt: false,
-                paymentType: 'credit-card',
                 note: '',
+                upload: false
             },
         }
     );
     const [alertOpen, setAlertOpen] = useState(false);
+    const [addNoteDialogOpen, setAddNoteDialogOpen] = useState(false);
     const [titleHeight, setTitleHeight] = useState(536);
     const [message, setMessage] = useState("");
     const [enMessage, setEnMessage] = useState("");
@@ -57,14 +43,17 @@ const CONFGive = () => {
     const [isSamsungPayReady, setIsSamsungPayReady] = useState(false);
     const [loading, setLoading] = useState(false);
     const [receiptType, setReceiptType] = useState<string>("personal");
-    const amount = getValues("amount");
-    const paymentType = getValues("paymentType");
     const [isFocused, setIsFocused] = useState(false);
+    const note = watch("note") || ""; // 確保 note 不為 undefined
+    const [noteLength, setNoteLength] = useState(note.length);
+    const [selectedPayment, setSelectedPayment] = useState("");
     const [creditCardStatus, setCreditCardStatus] = useState({
         number: '',
         expiry: '',
         ccv: ''
     });
+    const [outputNote, setOutputNote] = useState('');
+
     const handleFocus = () => {
         setIsFocused(true);
     };
@@ -96,11 +85,44 @@ const CONFGive = () => {
         TPDirect.samsungPay.setup({
             country_code: 'tw'
         });
+
+        let ua = navigator.userAgent.toLowerCase();
+        let android = ua.includes("android");
+        let iOS = /iphone|ipad|ipod/.test(ua);
+        let samsung = /sm-|galaxy/.test(ua);
+
+        if (samsung) {
+            setSelectedPayment("samsung-pay");
+        } else if (iOS) {
+            setSelectedPayment("apple-pay");
+        } else if (android) {
+            setSelectedPayment("google-pay");
+        } else {
+            setSelectedPayment("apple-pay");
+        };
     }, []);
 
     useEffect(() => {
         TPDirectCardOnUpdate();
     }, []);
+
+
+    useEffect(() => {
+        if (receiptType === "company") {
+            setValue("upload", false);
+            setValue("nationalid", "");
+        }
+    }, [receiptType, watch('upload')]);
+
+    useEffect(() => {
+        setNoteLength(note.length);
+    }, [note]); // 監聽 note 變化，確保 noteLength 及時更新
+
+    useEffect(() => {
+        if (!watch('receipt')) {
+            setReceiptType('personal');
+        };
+    }, [watch('receipt')]);
 
 
     // 設置 Credit Card 欄位狀態
@@ -125,26 +147,25 @@ const CONFGive = () => {
     useEffect(() => {
         console.log("表單錯誤狀態：", errors, isValid);
         if (isValid) {
-            switch (paymentType) {
+            switch (watch('paymentType')) {
                 case "apple-pay":
                     setupApplePay();
                     break;
                 case "google-pay":
                     console.log('dd');
-
                     setupGooglePay();
                     break;
                 case "samsung-pay":
                     setupSamSungPay();
                     break;
             };
-        };
+        }
         // eslint-disable-next-line
     }, [errors, isValid, watch('paymentType')]);
 
 
     // **提交**
-    const onSubmit: SubmitHandler<confGiveProps> = (data) => {
+    const onSubmit: SubmitHandler<ConfGiveProps> = (data) => {
         if (data.paymentType === "credit-card") {
             setupCreditCard();
         };
@@ -160,8 +181,8 @@ const CONFGive = () => {
         const paymentRequest = {
             supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             supportedMethods: ["apple_pay"],
-            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: amount.toString() } }],
-            total: { label: "付給 TapPay", amount: { currency: "TWD", value: amount.toString() } },
+            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: watch('amount').toString() } }],
+            total: { label: "付給 TapPay", amount: { currency: "TWD", value: watch('amount').toString() } },
         };
 
         const result: {
@@ -187,19 +208,19 @@ const CONFGive = () => {
         };
 
         console.log("✅ 該裝置有支援的卡片可以付款");
-
-        const button = document.querySelector("#apple-pay-button-container");
-        if (button) {
-            setTimeout(() => {
+        setTimeout(() => {
+            const button = document.querySelector("#apple-pay-button-container");
+            if (button) {
+                button.innerHTML = "";
                 TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
                     // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
                     postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
                 });
-            });
-        } else {
-            setIsApplePayReady(false);
-            console.error("❌ Apple Pay 按鈕未正確插入 DOM");
-        };
+            } else {
+                setIsApplePayReady(false);
+                console.error("❌ Apple Pay 按鈕未正確插入 DOM");
+            };
+        }, 200);
     };
 
 
@@ -210,7 +231,7 @@ const CONFGive = () => {
 
         const paymentRequest = {
             allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
-            price: amount.toString(),
+            price: watch('amount').toString(),
             currency: "TWD",
         };
 
@@ -225,23 +246,30 @@ const CONFGive = () => {
                 return;
             };
         });
-
         setTimeout(() => {
-            TPDirect.googlePay.setupGooglePayButton({
-                el: "#google-pay-button-container",
-                color: "black",
-                type: "long"
-            });
+            const button = document.querySelector("#google-pay-button-container");
+            console.log(button);
 
-            TPDirect.googlePay.getPrime(function (err: any, prime: any) {
-                console.log(err);
 
-                if (err) {
-                    handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
-                    return;
-                };
-                postPay(prime, lastfour);
-            });
+            if (button) {
+                button.innerHTML = "";
+                TPDirect.googlePay.setupGooglePayButton({
+                    el: "#google-pay-button-container",
+                    color: "black",
+                    type: "long"
+                });
+
+                TPDirect.googlePay.getPrime(function (err: any, prime: any) {
+                    console.log(err);
+
+                    if (err) {
+                        handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
+                        return;
+                    };
+                    postPay(prime, lastfour);
+                });
+
+            }
         }, 200);
     }
 
@@ -256,34 +284,37 @@ const CONFGive = () => {
                 label: 'The Hope',
                 amount: {
                     currency: 'TWD',
-                    value: amount.toString()
+                    value: watch('amount').toString()
                 }
             }
         };
 
         TPDirect.samsungPay.setupPaymentRequest(paymentRequest)
-
-        console.log("✅ 該裝置有支援的卡片可以付款");
-
         setTimeout(() => {
-            console.log("Samsung Pay 按鈕 DOM:", document.querySelector("#samsung-pay-button-container"));
+            console.log("✅ 該裝置有支援的卡片可以付款,可以設置 Samsung Pay 按鈕");
+            const button = document.querySelector("#samsung-pay-button-container");
 
-            TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
-                color: 'black',
-                type: 'pay',
-                shape: 'rectangular'
-            });
+            if (button) {
+                button.innerHTML = "";
+                console.log("Samsung Pay 按鈕 DOM:", document.querySelector("#samsung-pay-button-container"));
 
-            TPDirect.samsungPay.getPrime(function (result: any) {
-                if (result.status !== 0) {
-                    handleOpenAlert("此裝置不支援 Samsung Pay", "This device does not support Samsung Pay");
-                    return;
-                };
+                TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
+                    color: 'black',
+                    type: 'pay',
+                    shape: 'rectangular'
+                });
 
-                console.log("✅ 取得成功:", result);
-                postPay(result.prime, result.card.lastfour);
-            });
-        });
+                TPDirect.samsungPay.getPrime(function (result: any) {
+                    if (result.status !== 0) {
+                        handleOpenAlert("此裝置不支援 Samsung Pay", "This device does not support Samsung Pay");
+                        return;
+                    };
+
+                    console.log("✅ 取得成功:", result);
+                    postPay(result.prime, result.card.lastfour);
+                });
+            };
+        }, 200);
     }
 
 
@@ -330,7 +361,7 @@ const CONFGive = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 prime: prime,
-                amount: Number(amount),
+                amount: Number(watch('amount')),
                 cardholder: {
                     ...getValues(),
                     last_four
@@ -364,17 +395,44 @@ const CONFGive = () => {
         };
     };
 
-    // **設置 Alert **
+    // **設置 alert dialog **
     const handleOpenAlert = (message: string, enMessage: string) => {
         setMessage(message);
         setEnMessage(enMessage);
         setAlertOpen(true);
     };
 
-    // **關閉 Alert **
+    // **關閉 alert dialog **
     const handleCloseAlert = () => {
         setAlertOpen(false);
     };
+
+    // **關閉 add note dialog **
+    const handleCloseAddNote = () => {
+
+        clearErrors("note");
+
+        if (outputNote) {
+            setValue('note', outputNote);
+        } else {
+            setValue('note', "");
+        };
+        setAddNoteDialogOpen(false);
+    }
+
+    // ** add note dialog confrim**
+    const handleConfirmAddNote = () => {
+        // note 有沒有過驗證
+        console.log(addNoteDialogOpen);
+        if (!errors.note) {
+            setOutputNote(watch('note'));
+            setAddNoteDialogOpen(false);
+            console.log(outputNote);
+
+        } else {
+            return;
+        };
+    }
 
     return (
         <div>
@@ -446,6 +504,7 @@ const CONFGive = () => {
                                             },
                                         }}
                                         type="tel"
+                                        autoComplete="new-phoneCode"
                                         error={!!errors.phoneCode}
                                         helperText={errors.phoneCode?.message}
                                         className="phone-code basic-formControl"
@@ -459,6 +518,7 @@ const CONFGive = () => {
                                         placeholder="Mobile Number"
                                         className="phone-number basic-formControl"
                                         type="tel"
+                                        autoComplete="new-mobileNumber"
                                         error={!!errors.phone_number}
                                         helperText={errors.phone_number?.message}
                                         // 輸入框內禁止輸入 0 開頭
@@ -476,28 +536,33 @@ const CONFGive = () => {
                                         upload={watch("upload")}
                                         register={register}
                                         errors={errors}></Upload>
-                                    <PaymentSelect register={register}></PaymentSelect>
+                                    {selectedPayment && (
+                                        <PaymentSelect register={register}
+                                            selectedPayment={selectedPayment}></PaymentSelect>
+                                    )}
                                     <CreditCard paymentType={watch("paymentType")}
                                         register={register}
                                         errors={errors}
                                         creditCardStatus={creditCardStatus}></CreditCard>
-                                    <div className="width100">
-                                        <p className="label-chinese">備註</p>
-                                        <p className="label-english">Note</p>
-                                        <TextField
-                                            {...register("note", {
-                                                maxLength: { value: 200, message: "Note must be less than 200 characters" }
-                                            })}
-                                            id="outlined-required"
-                                            className="basic-formControl width100 m-t-8"
-                                            type="text"
-                                            multiline
-                                            rows={4}
-                                            error={!!errors.note}
-                                            helperText={errors.note?.message}
-                                        />
+
+                                    <div className="note-block" onClick={() => setAddNoteDialogOpen(true)}>
+
+                                        {!outputNote ? (
+                                            <>
+                                                <img className="add-icon" src="/images/add-icon.webp" alt="新增" />
+                                                <p className="add-note-label" >Add Note</p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <img className="edit-icon" src="/images/edit-icon.webp" alt="編輯" />
+                                                <p className="edit-note-label" >Note: {outputNote}</p>
+                                            </>
+                                        )}
                                     </div>
-                                    <PayButton paymentType={paymentType}
+                                    <PayButton paymentType={watch('paymentType')}
+                                        setupGooglePay={setupGooglePay}
+                                        setupApplePay={setupApplePay}
+                                        setupSamsungPay={setupSamSungPay}
                                         isApplePayReady={isApplePayReady}
                                         isGooglePayReady={isGooglePayReady}
                                         isSamsungPayReady={isSamsungPayReady}></PayButton>
@@ -506,14 +571,22 @@ const CONFGive = () => {
                         </Box>
                     </form>
                 )}
-                <ConfDialog
+                <ConfAlertDialog
                     open={alertOpen}
-                    title="錯誤"
+                    title="錯誤 Error"
                     message={message}
                     enMessage={enMessage}
                     onClose={handleCloseAlert}
-                    cancelText="關閉"></ConfDialog>
-
+                    cancelText="CLOSE"></ConfAlertDialog>
+                <ConfNoteDialog
+                    open={addNoteDialogOpen}
+                    title="Add Note"
+                    register={register}
+                    errors={errors}
+                    onClose={handleCloseAddNote}
+                    onConfirm={handleConfirmAddNote}
+                    noteLength={noteLength}
+                ></ConfNoteDialog>
                 {loading && (
                     <Box className="loading">
                         <CircularProgress className="loading-icon" />

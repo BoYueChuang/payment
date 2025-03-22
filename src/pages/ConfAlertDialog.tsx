@@ -11,7 +11,8 @@ interface AlertDialogProps {
     cancelText?: string;
 }
 
-const ConfDialog: React.FC<AlertDialogProps> = ({
+
+const ConfAlertDialog: React.FC<AlertDialogProps> = ({
     open,
     title = "錯誤 Error",
     message,
@@ -34,4 +35,4 @@ const ConfDialog: React.FC<AlertDialogProps> = ({
     );
 };
 
-export default ConfDialog;
+export default ConfAlertDialog;

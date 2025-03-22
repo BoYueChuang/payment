@@ -47,7 +47,7 @@ const Header = ({ titleHeight, setTitleHeight, giveStatus }: HeaderProps) => {
                     <br style={{ display: titleHeight < 536 || (giveStatus === "success" || giveStatus === "fail") ? "none" : "block" }} />
                     THE HOPE 特會
                 </p>
-                <p className="title-property">GIVE</p>
+                <p className="title-property">GIVING</p>
             </div>
         </div>
     );

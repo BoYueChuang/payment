@@ -7,22 +7,23 @@ import { CiCreditCard1 } from "react-icons/ci";
 
 interface PaymentSelectProps {
     register: UseFormRegister<any>;
+    selectedPayment: string;
 }
 
 
 const PaymentSelect: React.FC<PaymentSelectProps> = (props) => {
-    const { register } = props;
+    const { register, selectedPayment } = props;
     const paymentOptions = [
         { label: "Apple Pay", value: "apple-pay", icon: <SiApplepay size={24} /> },
         { label: "Google Pay", value: "google-pay", icon: <FaGooglePay size={24} /> },
         { label: "Samsung Pay", value: "samsung-pay", icon: <SiSamsungpay size={24} /> },
-    ]
+    ];
 
     return (
         <Select
             displayEmpty
             {...register("paymentType")}
-            defaultValue={"credit-card"}
+            defaultValue={selectedPayment}
             className="payment-method width100 basic-formControl"
             renderValue={(selected) => {
                 let icon, text;
@@ -42,10 +43,6 @@ const PaymentSelect: React.FC<PaymentSelectProps> = (props) => {
                         text = "Samsung Pay";
                         break;
                     case "credit-card":
-                        icon = <CiCreditCard1 size={24} />;
-                        text = "Credit Card";
-                        break;
-                    default:
                         icon = <CiCreditCard1 size={24} />;
                         text = "Credit Card";
                         break;

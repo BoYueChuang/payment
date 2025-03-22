@@ -5,10 +5,13 @@ interface PayButtonProps {
     isApplePayReady: boolean;
     isGooglePayReady: boolean;
     isSamsungPayReady: boolean;
+    setupGooglePay: () => void;
+    setupApplePay: () => void;
+    setupSamsungPay: () => void;
 }
 
 const PayButton: React.FC<PayButtonProps> = (props) => {
-    const { paymentType, isApplePayReady, isGooglePayReady, isSamsungPayReady } = props;
+    const { paymentType, isApplePayReady, isGooglePayReady, isSamsungPayReady, setupGooglePay, setupApplePay, setupSamsungPay } = props;
 
     return (
         <>
@@ -23,7 +26,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
             {paymentType === "apple-pay" && (
                 <>
                     {isApplePayReady ? (
-                        <div id="apple-pay-button-container"></div>
+                        <div id="apple-pay-button-container" onClick={setupApplePay}></div>
                     ) : (
                         <button type="submit" className="fake-pay-button apple-pay-button"></button>
                     )}
@@ -33,7 +36,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
             {paymentType === "google-pay" && (
                 <>
                     {isGooglePayReady ? (
-                        <div id="google-pay-button-container"></div>
+                        <div id="google-pay-button-container" onClick={setupGooglePay}></div>
                     ) : (
                         <button
                             type="submit"
@@ -45,7 +48,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
             {paymentType === "samsung-pay" && (
                 <>
                     {isSamsungPayReady ? (
-                        <div id="samsung-pay-button-container"></div>
+                        <div id="samsung-pay-button-container" onClick={setupSamsungPay}></div>
                     ) : (
                         <button
                             type="submit"
