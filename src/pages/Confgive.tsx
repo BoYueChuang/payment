@@ -210,7 +210,7 @@ const CONFGive = () => {
 
         console.log("✅ 該裝置有支援的卡片可以付款");
         setTimeout(() => {
-            const button = document.querySelector("#google-pay-button-container");
+            const button = document.querySelector("#apple-pay-button-container");
             console.log(button);
 
             if (button) {
@@ -220,7 +220,7 @@ const CONFGive = () => {
                     postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
                 });
             };
-        }, 100);
+        });
     };
 
 
