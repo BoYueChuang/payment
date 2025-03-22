@@ -161,7 +161,7 @@ const CONFGive = () => {
             };
         }
         // eslint-disable-next-line
-    }, [errors, isValid, watch('paymentType')]);
+    }, [errors, isValid, watch('paymentType'), watch('amount')]);
 
 
     // **提交**
