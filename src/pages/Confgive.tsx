@@ -220,7 +220,7 @@ const CONFGive = () => {
                     postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
                 });
             };
-        });
+        }, 100);
     };
 
 
@@ -503,6 +503,7 @@ const CONFGive = () => {
                                             },
                                         }}
                                         type="tel"
+                                        name="phoneCode"
                                         autoComplete="new-phoneCode"
                                         error={!!errors.phoneCode}
                                         helperText={errors.phoneCode?.message}
