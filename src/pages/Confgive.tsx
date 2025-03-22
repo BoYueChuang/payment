@@ -500,7 +500,7 @@ const CONFGive = () => {
                                             input: {
                                                 readOnly: false,
                                                 startAdornment: <InputAdornment position="start">+</InputAdornment>,
-                                                autoComplete: "off",
+                                                autoComplete: "new-phone-code",
                                             },
                                         }}
                                         type="tel"
@@ -513,11 +513,15 @@ const CONFGive = () => {
                                             required: "Required",
                                             validate: (value) => value.length === 9 || "Mobile Number invalid"
                                         })}
+                                        slotProps={{
+                                            input: {
+                                                autoComplete: "new-phone-number",
+                                            },
+                                        }}
                                         id="outlined-required"
                                         placeholder="Mobile Number"
                                         className="phone-number basic-formControl"
                                         type="tel"
-                                        autoComplete="new-mobileNumber"
                                         error={!!errors.phone_number}
                                         helperText={errors.phone_number?.message}
                                         // 輸入框內禁止輸入 0 開頭
