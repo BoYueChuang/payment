@@ -180,8 +180,8 @@ const CONFGive = () => {
         let paymentRequest = {
             supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             supportedMethods: ["apple_pay"],
-            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: getValues("amount") } }],
-            total: { label: "付給 TapPay", amount: { currency: "TWD", value: getValues("amount") } },
+            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: (Number(getValues("amount")) || 0).toFixed(2) } }],
+            total: { label: "付給 TapPay", amount: { currency: "TWD", value: (Number(getValues("amount")) || 0).toFixed(2) } },
         };
 
         const result: {
