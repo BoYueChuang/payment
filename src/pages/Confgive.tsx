@@ -503,8 +503,7 @@ const CONFGive = () => {
                                             },
                                         }}
                                         type="tel"
-                                        name="phoneCode"
-                                        autoComplete="new-phoneCode"
+                                        autoComplete="off"
                                         error={!!errors.phoneCode}
                                         helperText={errors.phoneCode?.message}
                                         className="phone-code basic-formControl"
