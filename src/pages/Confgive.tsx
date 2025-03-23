@@ -78,19 +78,11 @@ const CONFGive = () => {
             countryCode: 'TW',
         });
         TPDirect.googlePay.setupGooglePay({
-            googleMerchantId: 'BPk83kxB4ogLBPvlJoKgWg1+0b9o+LC9oiiRuqCbaG3pOU6VuQKU/JEqfO1z27d1TEa4UObfMs6S2ozWKoy1MpI=',
-            tappayGoogleMerchantId: 'BCVjIXlUZdUI0Fp3l0EkJnqQ53QBHqoWZ6xPtjT/SS6DYx6fCmW3hWnvtVWa3FTvbLgA=',
+            googleMerchantId: 'confgive.tappay.googlepay',
+            tappayGoogleMerchantId: 'confgive.tappay.googlepay',
             allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
             merchantName: "The Hope",
             allowedCountryCodes: ['TW'],
-            emailRequired: true, // optional
-            shippingAddressRequired: true, // optional,
-            billingAddressRequired: true, // optional
-            billingAddressFormat: "MIN", // FULL, MIN
-
-            allowPrepaidCards: true,
-
-            phoneNumberRequired: true // optional
         });
 
         TPDirect.samsungPay.setup({
