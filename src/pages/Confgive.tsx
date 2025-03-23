@@ -68,7 +68,7 @@ const CONFGive = () => {
         TPDirect.setupSDK(
             Number(import.meta.env.VITE_TAPPAY_APP_ID),
             import.meta.env.VITE_TAPPAY_APP_KEY || '',
-            'production'
+            'sandbox'
         );
         TPDirect.paymentRequestApi.checkAvailability();
         TPDirect.paymentRequestApi.setupApplePay({

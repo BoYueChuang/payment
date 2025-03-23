@@ -14,7 +14,7 @@ const AppRouter = () => {
 };
 
 const RedirectToExternal = () => {
-    window.location.replace("https://thehope.co/");
+    window.location.replace("https://thehope.co/en/privacyterms");
     return null; // 不渲染任何東西
 };
 
