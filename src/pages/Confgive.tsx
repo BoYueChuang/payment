@@ -353,7 +353,8 @@ const CONFGive = () => {
                 amount: Number(watch('amount')),
                 cardholder: {
                     ...getValues(),
-                    last_four
+                    last_four,
+                    name: getValues().name ? getValues().name : "未填寫",
                 }
             }),
         })
