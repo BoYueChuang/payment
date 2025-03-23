@@ -481,16 +481,20 @@ const CONFGive = () => {
                                 />
                                 <Box className="phone-block">
                                     <TextField
-                                        id="outlined-read-only-input"
                                         {...register("phoneCode", {
-                                            required: "Required"
+                                            required: "Required",
+                                            // 只能輸入數字
+                                            validate: (value) => {
+                                                const phoneCodePattern = /^[0-9]+$/;
+                                                return phoneCodePattern.test(value) || "IDP invalid";
+                                            }
                                         })}
                                         defaultValue="886"
                                         slotProps={{
                                             input: {
                                                 readOnly: false,
                                                 startAdornment: <InputAdornment position="start">+</InputAdornment>,
-                                                autoComplete: "new-phone-code",
+                                                autoComplete: "conf-phone-code",
                                             },
                                         }}
                                         type="tel"
@@ -501,20 +505,21 @@ const CONFGive = () => {
                                     <TextField
                                         {...register("phone_number", {
                                             required: "Required",
-                                            validate: (value) => value.length === 9 || "Mobile Number invalid"
+                                            validate: (value) => {
+                                                const phonePattern = /^[0-9]{8,15}$/;
+                                                return phonePattern.test(value) || "Mobile Number invalid";
+                                            }
                                         })}
                                         slotProps={{
                                             input: {
-                                                autoComplete: "new-phone-number",
+                                                autoComplete: "conf-phone-number",
                                             },
                                         }}
-                                        id="outlined-required"
                                         placeholder="Mobile Number"
                                         className="phone-number basic-formControl"
                                         type="tel"
                                         error={!!errors.phone_number}
                                         helperText={errors.phone_number?.message}
-                                        // 輸入框內禁止輸入 0 開頭
                                         onInput={handlePhoneInputChange}
                                     />
                                 </Box>
