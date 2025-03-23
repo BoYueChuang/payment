@@ -128,8 +128,6 @@ const CONFGive = () => {
     // 設置 Credit Card 欄位狀態
     const TPDirectCardOnUpdate = () => {
         TPDirect.card.onUpdate((update: any) => {
-            console.log("Credit Card 欄位狀態:", update.status);
-
             // 檢查欄位是否無效
             const isInvalid = (status: number) => status === 3 || status === 2;
             const isRequired = (status: number) => status === 1;
@@ -145,14 +143,12 @@ const CONFGive = () => {
 
 
     useEffect(() => {
-        console.log("表單錯誤狀態：", errors, isValid);
         if (isValid) {
             switch (watch('paymentType')) {
                 case "apple-pay":
                     setupApplePay();
                     break;
                 case "google-pay":
-                    console.log('dd');
                     setupGooglePay();
                     break;
                 case "samsung-pay":
@@ -211,12 +207,10 @@ const CONFGive = () => {
         console.log("✅ 該裝置有支援的卡片可以付款");
         setTimeout(() => {
             const button = document.querySelector("#apple-pay-button-container");
-            console.log(button);
 
             if (button) {
                 button.innerHTML = "";
                 TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
-                    // console.log("Prime 取得成功：", getPrimeResult.card.lastfour);
                     postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
                 });
             };
@@ -237,9 +231,7 @@ const CONFGive = () => {
 
         TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (err: any, result: any) {
             console.log('Error setting up payment request:', err);
-            console.log('Result of setting up payment request:', result);
             lastfour = result?.card?.lastfour;
-            console.log(result.canUseGooglePay);
 
             if (!result.canUseGooglePay) {
                 handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
@@ -248,7 +240,6 @@ const CONFGive = () => {
         });
         setTimeout(() => {
             const button = document.querySelector("#google-pay-button-container");
-            console.log(button);
 
             if (button) {
                 button.innerHTML = "";
@@ -295,7 +286,6 @@ const CONFGive = () => {
 
             if (button) {
                 button.innerHTML = "";
-                console.log("Samsung Pay 按鈕 DOM:", document.querySelector("#samsung-pay-button-container"));
 
                 TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
                     color: 'black',
