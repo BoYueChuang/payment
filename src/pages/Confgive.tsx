@@ -83,7 +83,6 @@ const CONFGive = () => {
             merchantName: "The Hope",
             allowedCountryCodes: ['TW']
         });
-
         TPDirect.samsungPay.setup({
             country_code: 'tw'
         });
@@ -148,7 +147,7 @@ const CONFGive = () => {
         if (isValid) {
             switch (watch('paymentType')) {
                 case "apple-pay":
-                    setIsApplePayReady(true);
+                    setupApplePay();
                     break;
                 case "google-pay":
                     setIsGooglePayReady(true);
@@ -210,11 +209,16 @@ const CONFGive = () => {
             return;
         };
 
-        console.log("✅ 該裝置有支援的卡片可以付款");
-        TPDirect.paymentRequestApi.getPrime(function (result: any) {
-            postPay(result.prime, result.card.lastfour);
-            console.log('paymentRequestApi.getPrime result', result)
-        })
+        setTimeout(() => {
+            const button = document.querySelector("#apple-pay-button-container");
+
+            if (button) {
+                button.innerHTML = "";
+                TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
+                    postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
+                });
+            };
+        }, 100);
     };
 
 
@@ -240,7 +244,6 @@ const CONFGive = () => {
                 return;
             };
         });
-
 
         TPDirect.googlePay.getPrime(function (err: any, prime: any) {
             console.log(err);

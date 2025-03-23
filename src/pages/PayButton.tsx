@@ -26,11 +26,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
             {paymentType === "apple-pay" && (
                 <>
                     {isApplePayReady ? (
-                        <button
-                            type="button"
-                            className="fake-pay-button apple-pay-button"
-                            onClick={setupApplePay}
-                        ></button>
+                        <div id="apple-pay-button-container" onClick={setupApplePay}></div>
                     ) : (
                         <button type="submit" className="fake-pay-button apple-pay-button"></button>
                     )}
