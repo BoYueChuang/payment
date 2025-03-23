@@ -78,7 +78,7 @@ const CONFGive = () => {
             countryCode: 'TW',
         });
         TPDirect.googlePay.setupGooglePay({
-            googleMerchantId: 'confgive.tappay.googlepay',
+            googleMerchantId: 'confGivingGooglePay',
             allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
             merchantName: "The Hope",
             allowedCountryCodes: ['TW']
