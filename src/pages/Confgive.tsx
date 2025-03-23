@@ -78,7 +78,7 @@ const CONFGive = () => {
             countryCode: 'TW',
         });
         TPDirect.googlePay.setupGooglePay({
-            googleMerchantId: import.meta.env.VITE_GOOGLE_MERCHANT_ID,
+            tappayGoogleMerchantId: import.meta.env.VITE_GOOGLE_MERCHANT_ID,
             allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
             merchantName: "The Hope",
             allowedCountryCodes: ['TW']
@@ -244,21 +244,25 @@ const CONFGive = () => {
         });
 
         setTimeout(() => {
-            TPDirect.googlePay.setupGooglePayButton({
-                el: "#google-pay-button-container",
-                color: "black",
-                type: "long"
-            });
+            const button = document.querySelector("#google-pay-button-container");
 
-            TPDirect.googlePay.getPrime(function (err: any, prime: any) {
-                console.log(err);
+            if (button) {
+                TPDirect.googlePay.setupGooglePayButton({
+                    el: "#google-pay-button-container",
+                    color: "black",
+                    type: "long"
+                });
 
-                if (err) {
-                    handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
-                    return;
-                };
-                postPay(prime, lastfour);
-            });
+                TPDirect.googlePay.getPrime(function (err: any, prime: any) {
+                    console.log(err);
+
+                    if (err) {
+                        handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
+                        return;
+                    };
+                    postPay(prime, lastfour);
+                });
+            };
         }, 200);
     }
 
