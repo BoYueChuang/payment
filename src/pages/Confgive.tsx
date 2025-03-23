@@ -148,16 +148,20 @@ const CONFGive = () => {
         if (isValid) {
             switch (watch('paymentType')) {
                 case "apple-pay":
-                    setupApplePay();
+                    setIsApplePayReady(true);
                     break;
                 case "google-pay":
-                    setupGooglePay();
+                    setIsGooglePayReady(true);
                     break;
                 case "samsung-pay":
-                    setupSamSungPay();
+                    setIsSamsungPayReady(true);
                     break;
             };
-        }
+        } else {
+            setIsGooglePayReady(false);
+            setIsApplePayReady(false);
+            setIsSamsungPayReady(false);
+        };
         // eslint-disable-next-line
     }, [errors, isValid, watch('paymentType'), watch('amount')]);
 
@@ -207,16 +211,10 @@ const CONFGive = () => {
         };
 
         console.log("✅ 該裝置有支援的卡片可以付款");
-        setTimeout(() => {
-            const button = document.querySelector("#apple-pay-button-container");
-
-            if (button) {
-                button.innerHTML = "";
-                TPDirect.paymentRequestApi.setupTappayPaymentButton("#apple-pay-button-container", (getPrimeResult: any) => {
-                    postPay(getPrimeResult.prime, getPrimeResult.card.lastfour);
-                });
-            };
-        }, 100);
+        TPDirect.paymentRequestApi.getPrime(function (result: any) {
+            postPay(result.prime, result.card.lastfour);
+            console.log('paymentRequestApi.getPrime result', result)
+        })
     };
 
 
@@ -243,27 +241,16 @@ const CONFGive = () => {
             };
         });
 
-        setTimeout(() => {
-            const button = document.querySelector("#google-pay-button-container");
 
-            if (button) {
-                TPDirect.googlePay.setupGooglePayButton({
-                    el: "#google-pay-button-container",
-                    color: "black",
-                    type: "long"
-                });
+        TPDirect.googlePay.getPrime(function (err: any, prime: any) {
+            console.log(err);
 
-                TPDirect.googlePay.getPrime(function (err: any, prime: any) {
-                    console.log(err);
-
-                    if (err) {
-                        handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
-                        return;
-                    };
-                    postPay(prime, lastfour);
-                });
+            if (err) {
+                handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
+                return;
             };
-        }, 200);
+            postPay(prime, lastfour);
+        });
     }
 
 
@@ -283,30 +270,15 @@ const CONFGive = () => {
         };
 
         TPDirect.samsungPay.setupPaymentRequest(paymentRequest)
-        setTimeout(() => {
-            console.log("✅ 該裝置有支援的卡片可以付款,可以設置 Samsung Pay 按鈕");
-            const button = document.querySelector("#samsung-pay-button-container");
-
-            if (button) {
-                button.innerHTML = "";
-
-                TPDirect.samsungPay.setupSamsungPayButton('#samsung-pay-button-container', {
-                    color: 'black',
-                    type: 'pay',
-                    shape: 'rectangular'
-                });
-
-                TPDirect.samsungPay.getPrime(function (result: any) {
-                    if (result.status !== 0) {
-                        handleOpenAlert("此裝置不支援 Samsung Pay", "This device does not support Samsung Pay");
-                        return;
-                    };
-
-                    console.log("✅ 取得成功:", result);
-                    postPay(result.prime, result.card.lastfour);
-                });
+        TPDirect.samsungPay.getPrime(function (result: any) {
+            if (result.status !== 0) {
+                handleOpenAlert("此裝置不支援 Samsung Pay", "This device does not support Samsung Pay");
+                return;
             };
-        }, 200);
+
+            console.log("✅ 取得成功:", result);
+            postPay(result.prime, result.card.lastfour);
+        });
     }
 
 
