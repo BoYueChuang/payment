@@ -77,12 +77,22 @@ const CONFGive = () => {
             merchantIdentifier: import.meta.env.VITE_APPLE_MERCHANT_ID,
             countryCode: 'TW',
         });
-        TPDirect.googlePay.setupGooglePay({
-            googleMerchantId: 'confGivingGooglePay',
+        const googlePaySetting = {
+            googleMerchantId: "Come from google portal",
+            tappayGoogleMerchantId: "Come from tappay portal",
             allowedCardAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-            merchantName: "The Hope",
-            allowedCountryCodes: ['TW']
-        });
+            merchantName: "TapPay Test!",
+            emailRequired: true, // optional
+            shippingAddressRequired: true, // optional,
+            billingAddressRequired: true, // optional
+            billingAddressFormat: "MIN", // FULL, MIN
+
+            allowPrepaidCards: true,
+            allowedCountryCodes: ['TW'],
+
+            phoneNumberRequired: true // optional
+        }
+        TPDirect.googlePay.setupGooglePay(googlePaySetting);
         TPDirect.samsungPay.setup({
             country_code: 'tw'
         });
@@ -183,8 +193,8 @@ const CONFGive = () => {
         let paymentRequest = {
             supportedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
             supportedMethods: ["apple_pay"],
-            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: getValues("amount") } }],
-            total: { label: "付給 TapPay", amount: { currency: "TWD", value: getValues("amount") } },
+            displayItems: [{ label: "TapPay", amount: { currency: "TWD", value: getValues("amount").toString() } }],
+            total: { label: "付給 TapPay", amount: { currency: "TWD", value: getValues("amount").toString() } },
         };
 
         const result: {
@@ -227,32 +237,24 @@ const CONFGive = () => {
 
         let lastfour = '';
 
-        const paymentRequest = {
+        var paymentRequest = {
             allowedNetworks: ["AMEX", "JCB", "MASTERCARD", "VISA"],
-            price: watch("amount"),
-            currency: "TWD",
-        };
-
+            price: getValues("amount").toString(), // optional
+            currency: "TWD", // optional
+        }
         TPDirect.googlePay.setupPaymentRequest(paymentRequest, function (err: any, result: any) {
-            console.log('Error setting up payment request:', err);
-            console.log('Result of setting up payment request:', result);
-            lastfour = result?.card?.lastfour;
-            console.log(result.canUseGooglePay);
-
-            if (!result.canUseGooglePay) {
-                handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
-                return;
-            };
-        });
-
-        TPDirect.googlePay.getPrime(function (err: any, prime: any) {
             console.log(err);
+            if (result.canUseGooglePay) {
+                TPDirect.googlePay.getPrime(function (err: any, prime: any) {
+                    console.log(err);
 
-            if (err) {
-                handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
-                return;
-            };
-            postPay(prime, lastfour);
+                    if (err) {
+                        handleOpenAlert("此裝置不支援 Google Pay", "This device does not support Google Pay");
+                        return;
+                    };
+                    postPay(prime, lastfour);
+                });
+            }
         });
     }
 
@@ -267,7 +269,7 @@ const CONFGive = () => {
                 label: 'The Hope',
                 amount: {
                     currency: 'TWD',
-                    value: getValues("amount") // 直接獲取最新值
+                    value: getValues("amount").toString() // 直接獲取最新值
                 }
             }
         };
